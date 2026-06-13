@@ -1046,13 +1046,13 @@
     <div class="modal-card">
       <h3>💕 发给锞锞选餐</h3>
       <div id="shareRemoteHint" class="hidden" style="background:#fff8e8;border:2px solid #ffd8a8;border-radius:12px;padding:10px;margin-bottom:12px;font-size:0.88rem;text-align:left;line-height:1.6"></div>
-      <p class="modal-desc">复制链接发微信，锞锞<strong>长按链接 → 在浏览器打开</strong>（Safari/Chrome）</p>
+      <p class="modal-desc">复制<strong>整段链接</strong>发微信。锞锞请<strong>复制链接 → 粘贴到 Safari 地址栏</strong>打开（不要点微信预览）</p>
       <div class="link-box">
         <input type="text" id="shareLinkInput" readonly />
         <button class="btn-wechat" id="copyLinkOnlyBtn" type="button">复制链接</button>
       </div>
-      <p class="hint" style="margin-top:8px;text-align:left">链接走「外网分享地址」。若仍提示 URI too long，请让锞锞<strong>长按链接 → 在 Safari 打开</strong>，或改用短消息选餐。</p>
-      <button class="btn-secondary btn-full hidden" id="shareShortMsgBtn" type="button">链接太长？复制选餐说明给锞锞</button>
+      <p class="hint" style="margin-top:8px;text-align:left">链接已改用 <code>#</code> 短格式，避免 URI too long。若仍打不开，用下方「复制选餐说明」或让锞锞发短消息选 A/B。</p>
+      <button class="btn-secondary btn-full" id="shareShortMsgBtn" type="button">复制选餐说明（含链接，推荐）</button>
       <button class="btn-ghost btn-full" id="closeShareModal" type="button">关闭</button>
     </div>
   </div>
@@ -2073,13 +2073,14 @@
     }
 
     function expandLitePayload(data) {
-      if (!data?.lite) return data;
+      if (!data?.lite && !data?.l) return data;
       const selStr = data.s || '';
       const selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
       MEALS.forEach((m, i) => { if (selStr[i]) selections[m.key] = selStr[i]; });
       const rawMeals = data.m || data.parsedMeals || {};
       return {
         ...data,
+        lite: true,
         ingredients: data.i || data.ingredients || '',
         parsedMeals: expandCompactMeals(rawMeals),
         selections: data.selections || selections,
@@ -2096,28 +2097,51 @@
     }
 
     function compactMealsForShare(parsedMeals) {
-      const out = {};
+      const flat = [];
       MEALS.forEach(m => {
         const d = parsedMeals[m.key];
-        if (!d) return;
-        out[m.key] = {
-          t: d.time || '',
-          a: truncateForShare(d.optionA, 220),
-          b: truncateForShare(d.optionB, 220),
-          c: (d.calories || '').slice(0, 36),
-          oa: (d.originA || extractOrigin(d.optionA) || '').slice(0, 60),
-          ob: (d.originB || extractOrigin(d.optionB) || '').slice(0, 60)
-        };
+        if (!d) {
+          flat.push('', '');
+          return;
+        }
+        flat.push(
+          truncateForShare(d.optionA, 88),
+          truncateForShare(d.optionB, 88)
+        );
       });
-      return out;
+      return flat;
     }
 
     function expandCompactMeals(m) {
-      if (!m || typeof m !== 'object') return {};
+      if (!m) return {};
+      if (Array.isArray(m) && (typeof m[0] === 'string' || m.length === 0)) {
+        const out = {};
+        MEALS.forEach((meal, i) => {
+          out[meal.key] = {
+            time: '',
+            optionA: m[i * 2] || '',
+            optionB: m[i * 2 + 1] || '',
+            calories: '',
+            originA: '',
+            originB: ''
+          };
+        });
+        return out;
+      }
+      if (typeof m !== 'object') return {};
       const out = {};
       for (const [key, d] of Object.entries(m)) {
         if (!d) continue;
-        if (d.a !== undefined || d.b !== undefined) {
+        if (Array.isArray(d)) {
+          out[key] = {
+            time: d[0] || '',
+            optionA: d[1] || '',
+            optionB: d[2] || '',
+            calories: d[3] || '',
+            originA: '',
+            originB: ''
+          };
+        } else if (d.a !== undefined || d.b !== undefined) {
           out[key] = {
             time: d.t || '',
             optionA: d.a || '',
@@ -2139,16 +2163,18 @@
         const role = (extra.shareRole ?? state.shareRole) === 'wife' ? 'w' : 'h';
         const forWife = extra.forWife || role === 'w';
         const payload = {
-          v: 5,
-          lite: true,
+          v: 6,
+          l: 1,
           m: forWife ? compactMealsForShare(state.parsedMeals) : state.parsedMeals,
           s: sel,
           w: (extra.sharedByWife ?? state.sharedByWife) ? 1 : 0,
-          r: role,
-          gm: isSingleMealMode() ? 's' : 'f'
+          r: role
         };
-        if (isSingleMealMode()) payload.sk = MEALS.findIndex(m => m.key === state.singleMealKey);
-        if (!forWife && state.ingredients) payload.i = state.ingredients.slice(0, 400);
+        if (isSingleMealMode()) {
+          payload.gm = 's';
+          payload.sk = MEALS.findIndex(m => m.key === state.singleMealKey);
+        }
+        if (!forWife && state.ingredients) payload.i = state.ingredients.slice(0, 300);
         return payload;
       }
       return {
@@ -2258,9 +2284,22 @@
       const json = JSON.stringify(buildPayload(extra, lite));
       if (typeof LZString !== 'undefined') {
         const compressed = LZString.compressToEncodedURIComponent(json);
-        if (compressed && compressed.length + 2 < json.length) return 'z' + compressed;
+        if (compressed) return 'z' + compressed;
       }
       return toUrlSafe(btoa(unescape(encodeURIComponent(json))));
+    }
+
+    function shareUrlUsesHash(extra, lite) {
+      return extra.forWife || extra.shareRole === 'wife' || lite;
+    }
+
+    function buildShareUrl(extra, lite) {
+      const encoded = encodeState(extra, lite);
+      const base = getShareBaseUrl().split('#')[0].split('?')[0];
+      if (shareUrlUsesHash(extra, lite)) {
+        return base + '#' + encoded;
+      }
+      return base + '?d=' + encoded;
     }
 
     function decodeState(encoded) {
@@ -2291,10 +2330,10 @@
     }
 
     function parseSharedFromPage() {
+      if (location.hash.length > 1) return decodeState(location.hash.slice(1));
       const params = new URLSearchParams(location.search);
       const d = params.get('d');
       if (d) return decodeState(d);
-      if (location.hash.length > 1) return decodeState(location.hash.slice(1));
       return null;
     }
 
@@ -2331,17 +2370,18 @@
     function syncUrl() {
       const hasMenu = state.firstResponse || Object.keys(state.parsedMeals).length > 0;
       if (!hasMenu) return;
-      const encoded = toUrlSafe(encodeState({}, isWifeMode() || state.shareRole === 'wife'));
-      if (isWifeMode() || state.sharedByWife) {
-        history.replaceState(null, '', getBaseUrl() + '?d=' + encoded);
+      const base = getBaseUrl().split('#')[0].split('?')[0];
+      const encoded = encodeState({}, isWifeMode() || state.shareRole === 'wife');
+      if (isWifeMode() || state.sharedByWife || encoded.length > 1200) {
+        history.replaceState(null, '', base + '#' + encoded);
       } else {
-        history.replaceState(null, '', getBaseUrl() + '#' + encoded);
+        history.replaceState(null, '', base + '?d=' + encoded);
       }
     }
 
     function applySharedState(data) {
       const hasMeals = data?.parsedMeals && Object.keys(data.parsedMeals).length > 0;
-      if (!data || (!data.firstResponse && !data.lite && !hasMeals)) return false;
+      if (!data || (!data.firstResponse && !data.lite && !data.l && !hasMeals)) return false;
       state.ingredients = data.ingredients || '';
       state.parsedMeals = data.parsedMeals || {};
       state.firstResponse = data.firstResponse || '';
@@ -2364,22 +2404,24 @@
       const forWife = opts.forWife ?? false;
       const wifeDone = opts.wifeDone ?? false;
       const lite = opts.lite ?? (forWife || wifeDone);
-      const encoded = encodeState({
+      return buildShareUrl({
         shareRole: wifeDone ? 'husband' : (forWife ? 'wife' : state.shareRole),
         sharedByWife: wifeDone || state.sharedByWife,
         forWife
       }, lite);
-      return getShareBaseUrl() + '?d=' + encoded;
     }
 
     function buildWifeOpenInstructions() {
       const url = getShareUrl({ forWife: true, lite: true });
       return [
         '亲爱的锞锞，老公给你准备了今日菜单～',
-        '请复制下面整段链接，粘贴到 Safari 地址栏打开（不要用微信里直接点）：',
-        url,
         '',
-        '如果打不开，让老公重新发一次链接，或在页面里一顿一顿选完发短消息给老公。'
+        '请按下面步骤打开（不要用微信里直接点链接）：',
+        '1. 长按下面整段链接 → 复制',
+        '2. 打开 Safari',
+        '3. 点顶部地址栏 → 粘贴 → 前往',
+        '',
+        url
       ].join('\n');
     }
 
@@ -2387,15 +2429,9 @@
       updateShareRemoteHint();
       if (needsPublicShareUrl()) {
         $('settingsPanel').classList.add('open');
-        showToast('请先设置外网分享地址，锞锞不同 WiFi 才能打开');
+        showToast('请先设置外网分享地址');
       }
-      const url = getShareUrl({ forWife: true, lite: true });
-      $('shareLinkInput').value = url;
-      const long = url.length > 2048;
-      $('shareShortMsgBtn').classList.toggle('hidden', !long);
-      if (long) {
-        showToast('链接较长，请让锞锞复制到 Safari 打开，或点下方「复制选餐说明」');
-      }
+      $('shareLinkInput').value = getShareUrl({ forWife: true, lite: true });
       $('shareModal').classList.remove('hidden');
     }
 
@@ -2788,7 +2824,7 @@
 
       $('copyLinkOnlyBtn').addEventListener('click', async () => {
         const ok = await copyText($('shareLinkInput').value);
-        showToast(ok ? '链接已复制，让锞锞粘贴到 Safari 打开' : '复制失败');
+        showToast(ok ? '已复制！让锞锞粘贴到 Safari 地址栏打开' : '复制失败');
       });
 
       $('shareShortMsgBtn').addEventListener('click', async () => {
