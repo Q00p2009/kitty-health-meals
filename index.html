@@ -167,6 +167,10 @@
       overflow: hidden;
     }
 
+    .card.card--select {
+      overflow: visible;
+    }
+
     .card::before {
       content: '🎀';
       position: absolute;
@@ -415,6 +419,22 @@
       font-weight: 600;
     }
 
+    .meal-pick-btn.active::after {
+      content: '✓';
+      display: block;
+      font-size: 0.72rem;
+      margin-top: 2px;
+      opacity: 0.85;
+    }
+
+    .partial-pick-hint {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+      margin: 6px 0 8px;
+      min-height: 1.2em;
+    }
+
     .single-meal-badge {
       text-align: center;
       padding: 10px;
@@ -514,9 +534,15 @@
     }
 
     .option-card .opt-content {
-      font-size: 0.9rem;
-      line-height: 1.55;
+      font-size: 0.94rem;
+      line-height: 1.7;
       color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    #mealStepArea {
+      overflow: visible;
     }
 
     .option-card .opt-cal {
@@ -541,6 +567,112 @@
       padding: 12px 14px;
       margin-bottom: 14px;
       font-size: 0.85rem;
+    }
+
+    .wife-pick-panel {
+      background: linear-gradient(145deg, #fff8fb, #ffe8f0);
+      border: 2px solid var(--pink-light);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+    }
+
+    .wife-pick-panel .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--pink);
+    }
+
+    .wife-pick-panel .panel-item {
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(255, 107, 157, 0.25);
+      line-height: 1.55;
+    }
+
+    .wife-pick-panel .panel-item:last-child {
+      border-bottom: none;
+    }
+
+    .wife-pick-panel .panel-item .meal-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .wife-pick-panel .panel-item .meal-detail {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .husband-pick-panel {
+      background: #f8f4ff;
+      border: 2px solid #d8c8f0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .husband-pick-panel h4 {
+      margin: 0 0 8px;
+      color: #6b5b8a;
+      font-size: 0.92rem;
+    }
+
+    .husband-pick-panel .panel-item {
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(107, 91, 138, 0.2);
+      line-height: 1.55;
+    }
+
+    .husband-pick-panel .panel-item:last-child { border-bottom: none; }
+    .husband-pick-panel .panel-item .meal-name { font-weight: 600; color: var(--text); }
+    .husband-pick-panel .panel-item .meal-detail.full-option {
+      color: var(--text);
+      font-size: 0.88rem;
+      margin-top: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid rgba(107, 91, 138, 0.15);
+      line-height: 1.65;
+    }
+
+    .review-ready-box {
+      background: linear-gradient(145deg, #f8f4ff, #fff8fb);
+      border: 2px solid #d8c8f0;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .review-ready-box h3 {
+      margin: 0 0 6px;
+      color: #6b5b8a;
+    }
+
+    .review-ready-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    #progressBar.hidden-bar,
+    #navBtns.hidden-bar {
+      display: none !important;
+    }
+
+    .btn-mini {
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 999px;
     }
 
     .picked-summary .item {
@@ -847,10 +979,11 @@
       border-radius: 14px;
       padding: 14px;
       text-align: left;
-      font-size: 0.95rem;
-      line-height: 1.6;
+      font-size: 0.92rem;
+      line-height: 1.65;
       margin-bottom: 12px;
-      word-break: break-all;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     @keyframes pop {
@@ -886,7 +1019,7 @@
       <div class="big-emoji">💕</div>
       <h3>亲爱的锞锞，老公给你准备了今日菜单</h3>
       <p>一顿一顿慢慢选就好<br>不用填食材，也不用配置 API<br>选完点下方「告诉老公」就行啦</p>
-      <p style="margin-top:8px;font-size:0.82rem;color:#9a7a86">打不开？长按链接 →「在浏览器中打开」（Safari/Chrome，别用微信里直接开）</p>
+      <p style="margin-top:8px;font-size:0.82rem;color:#9a7a86">选餐过程中可随时点「我的选择」查看；选完复制详细说明发给老公</p>
     </div>
 
     <div class="card hidden" id="brokenLinkCard" style="border-color:#ffd8a8;background:#fff8e8">
@@ -965,33 +1098,51 @@
         <button class="btn-secondary hidden" id="resetBtn" type="button">重新开始</button>
       </div>
       <div class="single-meal-box">
-        <label>只想单独做某一餐？</label>
+        <label>只想单独做某几餐？（可多选）</label>
         <div class="meal-pick-row" id="mealPickRow">
           <button type="button" class="meal-pick-btn active" data-meal="breakfast">🌅 早餐</button>
           <button type="button" class="meal-pick-btn" data-meal="lunch">🍱 午餐</button>
           <button type="button" class="meal-pick-btn" data-meal="dinner">🌇 晚餐</button>
           <button type="button" class="meal-pick-btn" data-meal="snack">🌙 宵夜</button>
         </div>
-        <button class="btn-accent btn-full" id="generateSingleBtn" type="button">✨ 单独生成所选餐次</button>
-        <div class="hint">只出这一餐的 A/B 选项与后续做法，适合临时加做一顿</div>
+        <div class="partial-pick-hint" id="partialPickHint">已选：早餐</div>
+        <button class="btn-accent btn-full" id="generateSingleBtn" type="button">✨ 生成所选餐次</button>
+        <div class="hint">可多选组合，如早餐+晚餐、或早餐+晚餐+宵夜</div>
       </div>
       <div class="status" id="step1Status"></div>
       <div class="status" id="stockStatus"></div>
     </div>
 
-    <div class="card hidden" id="step2Card">
+    <div class="card card--select hidden" id="step2Card">
       <h2><span class="step-badge">2</span> 一顿一顿来选</h2>
       <p class="hint husband-only" id="step2Hint" style="margin:-6px 0 12px">发给锞锞选也行；她没选的话，你自己点 A/B 就好</p>
+
+      <div class="wife-pick-panel wife-only hidden" id="wifePickPanel">
+        <div class="panel-head">
+          <span>💕 我的选择</span>
+          <button type="button" class="btn-ghost btn-mini" id="wifeReviewBtn">随时查看</button>
+        </div>
+        <div id="wifePickPanelBody"></div>
+      </div>
+
+      <div class="husband-pick-panel husband-only hidden" id="husbandPickPanel">
+        <h4>💕 锞锞的选择</h4>
+        <div id="husbandPickPanelBody"></div>
+      </div>
 
       <div class="progress-bar" id="progressBar"></div>
 
       <div id="mealStepArea" class="fade-in"></div>
 
       <div id="allDoneArea" class="hidden">
-        <div class="all-done-box pop-in">
+        <div class="all-done-box pop-in" id="allDoneDefault">
           <div class="big-heart">💕</div>
           <h3 id="allDoneTitle">四餐都选好啦！</h3>
           <p id="allDoneDesc" style="color:var(--muted);font-size:0.9rem;margin:0">确认无误就可以生成详细做法和采购清单</p>
+        </div>
+        <div class="review-ready-box hidden" id="husbandReviewBox">
+          <h3 id="husbandReviewTitle">💕 锞锞的选择已到位</h3>
+          <p id="husbandReviewDesc">下方是最终结果，核对后直接点「直接生成方案+时间表」，不用再选 A/B</p>
         </div>
       </div>
 
@@ -1001,6 +1152,7 @@
       </div>
 
       <div class="btn-row hidden wife-only" id="finalPickBtns">
+        <button class="btn-ghost btn-full" id="wifeReviewBtn2" type="button">📋 查看我的全部选择</button>
         <button class="btn-wechat btn-full" id="wifeDoneBtn" type="button">💌 告诉老公我选好了</button>
       </div>
 
@@ -1021,7 +1173,7 @@
       <div class="btn-row husband-only">
         <button class="btn-wechat" id="shareBtn" type="button">💕 发给锞锞选餐</button>
         <button class="btn-secondary" id="importLinkBtn" type="button">📥 锞锞发回选择了</button>
-        <button class="btn-primary hidden" id="confirmBtn" type="button">生成方案+做饭时间表 →</button>
+        <button class="btn-primary hidden" id="confirmBtn" type="button">直接生成方案+做饭时间表 →</button>
       </div>
       <div class="status" id="step2Status"></div>
     </div>
@@ -1057,13 +1209,23 @@
     </div>
   </div>
 
+  <!-- 锞锞查看选择弹窗 -->
+  <div class="modal-overlay hidden" id="wifeReviewModal">
+    <div class="modal-card pop-in">
+      <h3>💕 我的选择</h3>
+      <p class="modal-desc">随时回顾你选过的套餐，想改可以点上方进度条回到那一餐</p>
+      <div class="picked-summary" id="wifeReviewBody" style="text-align:left;margin-bottom:12px"></div>
+      <button class="btn-ghost btn-full" id="closeWifeReviewModal" type="button">关闭</button>
+    </div>
+  </div>
+
   <!-- 媳妇发给老公弹窗 -->
   <div class="modal-overlay hidden" id="wifeSendModal">
     <div class="modal-card pop-in">
       <h3>💌 告诉老公吧</h3>
-      <p class="modal-desc">推荐：复制下面<strong>短消息</strong>发微信给老公<br>最简单，不用发长链接</p>
+      <p class="modal-desc">推荐：复制下面<strong>详细选餐说明</strong>发微信给老公<br>他会看到每餐选了什么菜，不只是 A/B</p>
       <div class="short-msg-box" id="wifeShortMsg"></div>
-      <button class="btn-wechat btn-full" id="wifeCopyShortBtn" type="button">① 复制短消息发给老公</button>
+      <button class="btn-wechat btn-full" id="wifeCopyShortBtn" type="button">① 复制详细说明发给老公（推荐）</button>
       <div class="or-line">或者发链接</div>
       <div class="picked-summary" id="wifeSendSummary" style="text-align:left;margin-bottom:12px"></div>
       <div class="link-box">
@@ -1185,17 +1347,26 @@
       shareRole: 'husband',
       generateMode: 'full',
       singleMealKey: null,
+      mealScope: ['breakfast', 'lunch', 'dinner', 'snack'],
       messages: []
     };
 
-    let pickedSingleMeal = 'breakfast';
+    let pickedMeals = new Set(['breakfast']);
 
-    function isSingleMealMode() {
+    function isPartialMealMode() {
+      if (state.generateMode === 'partial' && state.mealScope?.length) return true;
       return state.generateMode === 'single' && !!state.singleMealKey;
     }
 
+    function isSingleMealMode() {
+      return isPartialMealMode() && getScopeMeals().length === 1;
+    }
+
     function getScopeMeals() {
-      if (isSingleMealMode()) {
+      if (state.generateMode === 'partial' && state.mealScope?.length) {
+        return MEALS.filter(m => state.mealScope.includes(m.key));
+      }
+      if (state.generateMode === 'single' && state.singleMealKey) {
         const m = MEALS.find(x => x.key === state.singleMealKey);
         return m ? [m] : [];
       }
@@ -1212,6 +1383,45 @@
       return state.shareRole === 'wife' && !state.sharedByWife;
     }
 
+    function isHusbandReviewMode() {
+      return !isWifeMode() && state.sharedByWife && allSelected();
+    }
+
+    function parseSelectionFromText(text, mealLabel) {
+      const patterns = [
+        new RegExp(mealLabel + '(?:（[^）]*）)?[^\\n]*?套餐\\s*([AB])', 'i'),
+        new RegExp(mealLabel + '(?:（[^）]*）)?[^\\n]*?[：:]\\s*([AB])\\b', 'i'),
+        new RegExp(mealLabel + '\\s*([AB])\\b', 'i')
+      ];
+      for (const re of patterns) {
+        const hit = text.match(re);
+        if (hit) return hit[1].toUpperCase();
+      }
+      return '';
+    }
+
+    function finishWifeImport(source) {
+      $('step2Card').classList.remove('hidden');
+      if (!isWifeMode()) $('resetBtn').classList.remove('hidden');
+      applyRoleUI();
+      renderMealStep();
+      syncUrl();
+      if (isHusbandReviewMode()) {
+        showHusbandReviewReady(source);
+      } else if (!allSelected()) {
+        setStatus($('step2Status'), '锞锞的选择不完整，请让她重新发一次', 'error');
+      }
+    }
+
+    function showHusbandReviewReady(source) {
+      const label = source ? `已从${source}收到锞锞的选择` : '锞锞的选择已同步';
+      setStatus($('step2Status'), `${label} · 核对后直接点「直接生成方案+做饭时间表」`, 'ok');
+      showToast('不用再选啦！核对后直接生成方案+时间表');
+      setTimeout(() => {
+        $('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+
     function applyRoleUI() {
       const wife = isWifeMode();
       document.querySelectorAll('.wife-only').forEach(el => el.classList.toggle('hidden', !wife));
@@ -1225,8 +1435,8 @@
       const step2h2 = $('step2Card').querySelector('h2');
       step2h2.innerHTML = wife
         ? '<span class="step-badge">♥</span> 慢慢选，不着急'
-        : (isSingleMealMode()
-          ? `<span class="step-badge">2</span> 选${mealByKey(state.singleMealKey)?.label || '这一餐'}`
+        : (isPartialMealMode()
+          ? `<span class="step-badge">2</span> 选${getScopeMeals().map(m => m.label).join('、')}`
           : '<span class="step-badge">2</span> 一顿一顿来选');
     }
 
@@ -1804,7 +2014,8 @@
           return MEALS.findIndex(m => m.key === scope[i].key);
         }
       }
-      return MEALS.length;
+      const last = scope[scope.length - 1];
+      return last ? MEALS.findIndex(m => m.key === last.key) : MEALS.length;
     }
 
     function allSelected() {
@@ -1830,16 +2041,140 @@
 
     function optionHeadline(text) {
       const line = formatOptionText(text).split('\n').find(l => l.trim()) || '';
-      return line.length > 36 ? line.slice(0, 36) + '…' : line;
+      return line.length > 56 ? line.slice(0, 56) + '…' : line;
+    }
+
+    function getSelectionDetail(mealKey, letter) {
+      const data = state.parsedMeals[mealKey];
+      if (!data || !letter) return '';
+      const opt = letter === 'A' ? data.optionA : data.optionB;
+      return optionBodyWithoutOrigin(opt).replace(/\n/g, ' · ').trim();
+    }
+
+    function buildSelectionDetailLines(scopeMeals) {
+      return scopeMeals.filter(m => state.selections[m.key]).map(m => {
+        const sel = state.selections[m.key];
+        const data = state.parsedMeals[m.key];
+        const time = data?.time ? `（${data.time}）` : '';
+        const detail = getSelectionDetail(m.key, sel);
+        return {
+          key: m.key,
+          icon: m.icon,
+          label: m.label,
+          sel,
+          time,
+          detail,
+          line: `${m.icon} ${m.label}${time}：套餐 ${sel}${detail ? '\n   ' + detail : ''}`
+        };
+      });
+    }
+
+    function buildHusbandResultCards() {
+      return getScopeMeals()
+        .filter(m => state.selections[m.key])
+        .map(m => {
+          const sel = state.selections[m.key];
+          const data = state.parsedMeals[m.key];
+          const opt = sel === 'A' ? data?.optionA : data?.optionB;
+          return {
+            m,
+            sel,
+            time: data?.time || '',
+            full: optionBodyWithoutOrigin(opt || '')
+          };
+        });
+    }
+
+    function renderSelectionPanels() {
+      const scope = getScopeMeals();
+      const picked = buildSelectionDetailLines(scope);
+      const wifePanel = $('wifePickPanel');
+      const wifeBody = $('wifePickPanelBody');
+      const husbandPanel = $('husbandPickPanel');
+      const husbandBody = $('husbandPickPanelBody');
+
+      if (isWifeMode() && scope.some(m => state.parsedMeals[m.key])) {
+        wifePanel.classList.remove('hidden');
+        if (!picked.length) {
+          wifeBody.innerHTML = '<div style="color:var(--muted)">还没选呢，慢慢看 A/B 选项吧～</div>';
+        } else {
+          wifeBody.innerHTML = picked.map(p => `
+            <div class="panel-item">
+              <div class="meal-name">${p.icon} ${p.label} · 套餐 ${p.sel}</div>
+              ${p.detail ? `<div class="meal-detail">${p.detail}</div>` : ''}
+            </div>`).join('');
+        }
+      } else {
+        wifePanel.classList.add('hidden');
+      }
+
+      if (isHusbandReviewMode()) {
+        husbandPanel.classList.remove('hidden');
+        husbandBody.innerHTML = buildHusbandResultCards().map(r => `
+          <div class="panel-item result-card">
+            <div class="meal-name">${r.m.icon} ${r.m.label}${r.time ? ' · ' + r.time : ''} · 套餐 ${r.sel}</div>
+            ${r.full ? `<div class="meal-detail full-option">${r.full.replace(/\n/g, '<br>')}</div>` : ''}
+          </div>`).join('');
+      } else if (!isWifeMode() && state.sharedByWife && picked.length) {
+        husbandPanel.classList.remove('hidden');
+        husbandBody.innerHTML = picked.map(p => `
+          <div class="panel-item">
+            <div class="meal-name">${p.icon} ${p.label} · 套餐 ${p.sel}</div>
+            ${p.detail ? `<div class="meal-detail">${p.detail}</div>` : ''}
+          </div>`).join('');
+      } else {
+        husbandPanel.classList.add('hidden');
+      }
+    }
+
+    function openWifeReviewModal() {
+      const scope = getScopeMeals();
+      const picked = buildSelectionDetailLines(scope);
+      $('wifeReviewBody').innerHTML = picked.length
+        ? picked.map(p => `
+            <div class="item" style="flex-direction:column;align-items:flex-start;gap:4px">
+              <span><strong>${p.icon} ${p.label}</strong> · 套餐 ${p.sel}</span>
+              ${p.detail ? `<span style="color:var(--muted);font-size:0.85rem;line-height:1.5">${p.detail}</span>` : ''}
+            </div>`).join('')
+        : '<div style="color:var(--muted)">还没有选择记录</div>';
+      $('wifeReviewModal').classList.remove('hidden');
+    }
+
+    function updatePartialPickHint() {
+      const el = $('partialPickHint');
+      if (!el) return;
+      const labels = MEALS.filter(m => pickedMeals.has(m.key)).map(m => m.label);
+      el.textContent = labels.length ? '已选：' + labels.join('、') : '请至少选择一餐';
     }
 
     function renderProgressBar() {
       const bar = $('progressBar');
-      if (isSingleMealMode()) {
-        const m = mealByKey(state.singleMealKey);
-        if (!m) { bar.innerHTML = ''; return; }
-        const sel = state.selections[m.key];
-        bar.innerHTML = `<div class="single-meal-badge">${m.icon} 单餐模式：${m.label}${sel ? ' · 已选套餐 ' + sel : ' · 请选 A 或 B'}</div>`;
+      if (isPartialMealMode()) {
+        const scope = getScopeMeals();
+        if (scope.length === 1) {
+          const m = scope[0];
+          const sel = state.selections[m.key];
+          bar.innerHTML = `<div class="single-meal-badge">${m.icon} 已选餐次：${m.label}${sel ? ' · 已选套餐 ' + sel : ' · 请选 A 或 B'}</div>`;
+          return;
+        }
+        bar.innerHTML = scope.map((m, i) => {
+          const sel = state.selections[m.key];
+          const globalIdx = MEALS.findIndex(x => x.key === m.key);
+          let cls = 'progress-dot';
+          if (sel === 'A' || sel === 'B') cls += ' done';
+          const activeIdx = allSelected() ? scope.length : scope.findIndex(x => !state.selections[x.key]);
+          if (i === activeIdx && !allSelected()) cls += ' active';
+          if (!isWifeMode()) cls += ' clickable';
+          return `<div class="${cls}" data-meal-idx="${globalIdx}" role="button" tabindex="0">
+            <span class="icon">${sel ? sel : m.icon}</span>
+            <span class="label">${m.label}</span>
+          </div>`;
+        }).join('');
+        if (!isWifeMode()) {
+          bar.querySelectorAll('.progress-dot.clickable').forEach(dot => {
+            dot.addEventListener('click', () => jumpToMeal(Number(dot.dataset.mealIdx)));
+          });
+        }
         return;
       }
       const activeIdx = allSelected() ? MEALS.length : getCurrentIndex();
@@ -1863,8 +2198,11 @@
 
     function jumpToMeal(idx) {
       if (isWifeMode() || idx < 0 || idx >= MEALS.length) return;
-      for (let i = idx; i < MEALS.length; i++) {
-        state.selections[MEALS[i].key] = '';
+      const scope = getScopeMeals();
+      const start = scope.findIndex(m => MEALS.findIndex(x => x.key === m.key) >= idx);
+      const from = start >= 0 ? start : 0;
+      for (let i = from; i < scope.length; i++) {
+        state.selections[scope[i].key] = '';
       }
       state.viewingIndex = idx;
       state.sharedByWife = false;
@@ -1873,16 +2211,13 @@
     }
 
     function restartSelection() {
-      if (isSingleMealMode()) {
-        state.selections[state.singleMealKey] = '';
-      } else {
-        state.selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
-      }
+      getScopeMeals().forEach(m => { state.selections[m.key] = ''; });
       state.sharedByWife = false;
-      state.viewingIndex = 0;
+      state.viewingIndex = MEALS.findIndex(m => m.key === getScopeMeals()[0]?.key) || 0;
       renderMealStep();
       setStatus($('step2Status'), '', '');
-      showToast(isSingleMealMode() ? '重新选这一餐吧～' : '从早餐开始自己选吧～');
+      const scope = getScopeMeals();
+      showToast(scope.length === 1 ? '重新选这一餐吧～' : `从${scope[0]?.label || '第一餐'}开始重新选吧～`);
     }
 
     function renderOptionCard(mealKey, letter, data) {
@@ -1902,8 +2237,10 @@
 
     function renderMealStep() {
       renderProgressBar();
+      renderSelectionPanels();
 
-      const idx = allSelected() ? MEALS.length - 1 : getCurrentIndex();
+      const reviewMode = isHusbandReviewMode();
+      const idx = getCurrentIndex();
       state.viewingIndex = idx;
 
       const mealArea = $('mealStepArea');
@@ -1912,33 +2249,57 @@
       const finalPickBtns = $('finalPickBtns');
       const prevBtn = $('prevMealBtn');
       const restartBtn = $('restartPickBtn');
+      const progressBar = $('progressBar');
+      const navBtns = $('navBtns');
+      const step2Hint = $('step2Hint');
+      const husbandReviewBox = $('husbandReviewBox');
+      const allDoneDefault = $('allDoneDefault');
+
+      progressBar.classList.toggle('hidden-bar', reviewMode);
+      navBtns.classList.toggle('hidden-bar', reviewMode);
+      step2Hint.textContent = reviewMode
+        ? '锞锞已经选好了，下方是最终结果，核对后直接生成即可'
+        : '发给锞锞选也行；她没选的话，你自己点 A/B 就好';
 
       if (allSelected()) {
         mealArea.classList.add('hidden');
         allDone.classList.remove('hidden');
+        husbandReviewBox.classList.toggle('hidden', !reviewMode);
+        allDoneDefault.classList.toggle('hidden', reviewMode);
         finalPickBtns.classList.toggle('hidden', !isWifeMode());
-        prevBtn.classList.remove('hidden');
+        prevBtn.classList.toggle('hidden', reviewMode || isWifeMode());
         restartBtn.classList.toggle('hidden', isWifeMode());
+        const scopeLabels = getScopeMeals().map(m => m.label).join('、');
+        restartBtn.textContent = reviewMode
+          ? '锞锞要改选？重新导入'
+          : (getScopeMeals().length === 4 ? '重新选四餐' : `重新选${scopeLabels}`);
         if (isWifeMode()) {
           confirmBtn.classList.add('hidden');
           $('allDoneTitle').textContent = '锞锞，都选好啦！';
-          $('allDoneDesc').textContent = '点下方「告诉老公我选好了」，他就能看到你的选择～';
+          $('allDoneDesc').textContent = '可点「查看我的全部选择」确认，再「告诉老公我选好了」';
         } else {
           confirmBtn.classList.remove('hidden');
-          const m = isSingleMealMode() ? mealByKey(state.singleMealKey) : null;
-          $('allDoneTitle').textContent = state.sharedByWife
-            ? (m ? `锞锞的${m.label}选择已同步` : '锞锞的选择已同步')
-            : (m ? `${m.label}选好啦！` : '四餐都选好啦！');
-          $('allDoneDesc').textContent = state.sharedByWife
-            ? '确认无误就生成方案；想自己改点「重新选四餐」'
-            : (m ? '确认后生成这一餐的做法、采购清单和做饭时间表' : '确认后一次生成做法、采购清单和做饭时间表');
+          const scope = getScopeMeals();
+          const m = scope.length === 1 ? scope[0] : null;
+          if (reviewMode) {
+            $('husbandReviewTitle').textContent = '💕 锞锞的选择（最终结果）';
+            $('husbandReviewDesc').textContent = '核对下方每餐内容，没问题就点「直接生成方案+做饭时间表」';
+            confirmBtn.textContent = '直接生成方案+做饭时间表 →';
+          } else {
+            $('allDoneTitle').textContent = state.sharedByWife
+              ? (m ? `锞锞的${m.label}选择已同步` : (scope.length < 4 ? '锞锞的选择已同步' : '锞锞的选择已同步'))
+              : (m ? `${m.label}选好啦！` : (scope.length < 4 ? `${scope.map(x => x.label).join('、')}都选好啦！` : '四餐都选好啦！'));
+            $('allDoneDesc').textContent = state.sharedByWife
+              ? '上方可查看每餐详情；确认无误就生成方案，想自己改点「重新选餐」'
+              : (m ? '确认后生成这一餐的做法、采购清单和做饭时间表' : '确认后一次生成做法、采购清单和做饭时间表');
+            confirmBtn.textContent = scope.length === 1 ? '生成这一餐方案+时间表 →' : '生成方案+做饭时间表 →';
+          }
           $('cookPrefBox').style.display = 'grid';
-          $('confirmBtn').textContent = m ? '生成这一餐方案+时间表 →' : '生成方案+做饭时间表 →';
         }
         return;
       }
 
-      $('confirmBtn').textContent = isSingleMealMode() ? '生成这一餐方案+时间表 →' : '生成方案+做饭时间表 →';
+      $('confirmBtn').textContent = getScopeMeals().length === 1 ? '生成这一餐方案+时间表 →' : '生成方案+做饭时间表 →';
 
       mealArea.classList.remove('hidden');
       allDone.classList.add('hidden');
@@ -1947,15 +2308,20 @@
       restartBtn.classList.add('hidden');
       if (!isWifeMode()) $('cookPrefBox').style.display = 'none';
 
-      const meal = MEALS[idx];
+      const scope = getScopeMeals();
+      let meal = MEALS[idx];
+      if (!scope.some(m => m.key === meal?.key)) {
+        const next = scope.find(m => !state.selections[m.key] || state.selections[m.key] === '');
+        meal = next || scope[0] || meal;
+      }
       const data = state.parsedMeals[meal.key];
 
-      prevBtn.classList.toggle('hidden', idx === 0 && !isSingleMealMode());
+      const scopeStartIdx = MEALS.findIndex(m => m.key === scope[0]?.key);
+      prevBtn.classList.toggle('hidden', MEALS.findIndex(m => m.key === meal.key) <= scopeStartIdx);
 
-      const scope = getScopeMeals();
       const posInScope = scope.findIndex(m => m.key === meal.key);
       const hint = isWifeMode() ? WIFE_HINTS[meal.key] : (
-        isSingleMealMode() ? `选 ${meal.label} 的 A 或 B` : `选一个喜欢的吧～（${posInScope + 1} / ${scope.length}）`
+        isPartialMealMode() ? `选 ${meal.label} 的 A 或 B` : `选一个喜欢的吧～（${posInScope + 1} / ${scope.length}）`
       );
       const loveHint = isWifeMode() ? `<div class="love-hint">${hint}</div>` : '';
 
@@ -1999,8 +2365,12 @@
       syncUrl();
 
       const idx = MEALS.findIndex(m => m.key === key);
-      if (!isSingleMealMode() && idx < MEALS.length - 1 && getCurrentIndex() > idx) {
-        state.viewingIndex = idx + 1;
+      if (!isPartialMealMode() || getScopeMeals().length > 1) {
+        const scope = getScopeMeals();
+        const pos = scope.findIndex(m => m.key === key);
+        if (pos >= 0 && pos < scope.length - 1 && getCurrentIndex() > idx) {
+          state.viewingIndex = MEALS.findIndex(m => m.key === scope[pos + 1].key);
+        }
       }
 
       if (isWifeMode()) {
@@ -2014,21 +2384,17 @@
 
     function goPrevMeal() {
       if (allSelected()) {
-        if (isSingleMealMode()) {
-          state.selections[state.singleMealKey] = '';
-          renderMealStep();
-          return;
-        }
-        state.viewingIndex = MEALS.length - 1;
-        const last = MEALS[MEALS.length - 1].key;
-        state.selections[last] = '';
+        const scope = getScopeMeals();
+        const last = scope[scope.length - 1];
+        if (last) state.selections[last.key] = '';
         renderMealStep();
         return;
       }
-      const idx = getCurrentIndex();
-      if (idx > 0) {
-        const prevKey = MEALS[idx - 1].key;
-        state.selections[prevKey] = '';
+      const scope = getScopeMeals();
+      const currentIdx = getCurrentIndex();
+      const pos = scope.findIndex(m => MEALS.findIndex(x => x.key === m.key) === currentIdx);
+      if (pos > 0) {
+        state.selections[scope[pos - 1].key] = '';
         renderMealStep();
       }
     }
@@ -2077,17 +2443,25 @@
       const selStr = data.s || '';
       const selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
       MEALS.forEach((m, i) => { if (selStr[i]) selections[m.key] = selStr[i]; });
-      const rawMeals = data.m || data.parsedMeals || {};
+      const mealIndices = Array.isArray(data.ms)
+        ? data.ms
+        : (data.sk != null && MEALS[data.sk] ? [data.sk] : null);
+      const generateMode = data.gm === 'p' ? 'partial'
+        : (data.gm === 's' || data.generateMode === 'single' ? 'single' : 'full');
+      const mealScope = mealIndices
+        ? mealIndices.map(i => MEALS[i]?.key).filter(Boolean)
+        : (generateMode === 'full' ? MEALS.map(m => m.key) : []);
       return {
         ...data,
         lite: true,
         ingredients: data.i || data.ingredients || '',
-        parsedMeals: expandCompactMeals(rawMeals),
+        parsedMeals: expandCompactMeals(data.m || data.parsedMeals || {}, mealIndices),
         selections: data.selections || selections,
         sharedByWife: !!(data.w ?? data.sharedByWife),
         shareRole: (data.r === 'w' || data.shareRole === 'wife') ? 'wife' : 'husband',
-        generateMode: data.gm === 's' || data.generateMode === 'single' ? 'single' : 'full',
-        singleMealKey: (data.sk != null && MEALS[data.sk]) ? MEALS[data.sk].key : (data.singleMealKey || null)
+        generateMode,
+        mealScope: mealScope.length ? mealScope : MEALS.map(m => m.key),
+        singleMealKey: mealScope.length === 1 ? mealScope[0] : (data.singleMealKey || null)
       };
     }
 
@@ -2098,25 +2472,24 @@
 
     function compactMealsForShare(parsedMeals) {
       const flat = [];
-      MEALS.forEach(m => {
+      getScopeMeals().forEach(m => {
         const d = parsedMeals[m.key];
-        if (!d) {
-          flat.push('', '');
-          return;
-        }
         flat.push(
-          truncateForShare(d.optionA, 88),
-          truncateForShare(d.optionB, 88)
+          truncateForShare(d?.optionA, 88),
+          truncateForShare(d?.optionB, 88)
         );
       });
       return flat;
     }
 
-    function expandCompactMeals(m) {
+    function expandCompactMeals(m, mealIndices) {
       if (!m) return {};
       if (Array.isArray(m) && (typeof m[0] === 'string' || m.length === 0)) {
+        const indices = mealIndices || MEALS.map((_, i) => i);
         const out = {};
-        MEALS.forEach((meal, i) => {
+        indices.forEach((mealIdx, i) => {
+          const meal = MEALS[mealIdx];
+          if (!meal) return;
           out[meal.key] = {
             time: '',
             optionA: m[i * 2] || '',
@@ -2170,9 +2543,12 @@
           w: (extra.sharedByWife ?? state.sharedByWife) ? 1 : 0,
           r: role
         };
-        if (isSingleMealMode()) {
-          payload.gm = 's';
-          payload.sk = MEALS.findIndex(m => m.key === state.singleMealKey);
+        if (isPartialMealMode()) {
+          payload.gm = getScopeMeals().length === 1 ? 's' : 'p';
+          payload.ms = getScopeMeals().map(m => MEALS.findIndex(x => x.key === m.key));
+          if (getScopeMeals().length === 1) {
+            payload.sk = payload.ms[0];
+          }
         }
         if (!forWife && state.ingredients) payload.i = state.ingredients.slice(0, 300);
         return payload;
@@ -2187,6 +2563,7 @@
         shareRole: state.shareRole,
         generateMode: state.generateMode,
         singleMealKey: state.singleMealKey,
+        mealScope: state.mealScope,
         ...extra
       };
     }
@@ -2372,7 +2749,7 @@
       if (!hasMenu) return;
       const base = getBaseUrl().split('#')[0].split('?')[0];
       const encoded = encodeState({}, isWifeMode() || state.shareRole === 'wife');
-      if (isWifeMode() || state.sharedByWife || encoded.length > 1200) {
+      if (isWifeMode() || state.sharedByWife || isPartialMealMode() || encoded.length > 1200) {
         history.replaceState(null, '', base + '#' + encoded);
       } else {
         history.replaceState(null, '', base + '?d=' + encoded);
@@ -2393,8 +2770,12 @@
       state.selections = Object.assign({ breakfast: '', lunch: '', dinner: '', snack: '' }, data.selections || {});
       state.sharedByWife = !!data.sharedByWife;
       state.shareRole = data.sharedByWife ? 'husband' : (data.shareRole || 'husband');
-      state.generateMode = data.generateMode === 'single' ? 'single' : 'full';
-      state.singleMealKey = data.singleMealKey || null;
+      state.generateMode = data.generateMode === 'partial' ? 'partial'
+        : (data.generateMode === 'single' ? 'single' : 'full');
+      state.mealScope = data.mealScope?.length ? data.mealScope
+        : (data.generateMode === 'full' ? MEALS.map(m => m.key)
+          : (data.singleMealKey ? [data.singleMealKey] : MEALS.filter(m => data.parsedMeals?.[m.key]).map(m => m.key)));
+      state.singleMealKey = data.singleMealKey || (state.mealScope.length === 1 ? state.mealScope[0] : null);
       if (data.lite || !state.messages.length) rebuildMessages();
       applyRoleUI();
       return true;
@@ -2437,28 +2818,40 @@
 
     function buildWifeShortMsg() {
       const scope = getScopeMeals().filter(m => state.selections[m.key]);
-      const parts = scope.map(m => `${m.label}${state.selections[m.key]}`);
-      return `老公我选好啦♥ ${parts.join(' ')} 辛苦你啦～`;
+      const abLine = scope.map(m => `${m.label}${state.selections[m.key]}`).join(' ');
+      const details = buildSelectionDetailLines(getScopeMeals()).map(p => p.line);
+      return [
+        `老公我选好啦♥ ${abLine} 辛苦你啦～`,
+        '',
+        '【详细选择】',
+        ...details
+      ].join('\n');
     }
 
     function parseWifeShortSelections(text) {
       if (!text || text.includes('d=') || /^https?:\/\//i.test(text.trim())) return null;
       const selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
-      let count = 0;
       MEALS.forEach(m => {
-        const hit = text.match(new RegExp(m.label + '\\s*([AB])', 'i'));
-        if (hit) { selections[m.key] = hit[1].toUpperCase(); count++; }
+        const hit = parseSelectionFromText(text, m.label);
+        if (hit) selections[m.key] = hit;
       });
-      return count >= 4 ? selections : (count >= 1 && Object.keys(state.parsedMeals).length === 1 ? selections : null);
+      const needMeals = MEALS.filter(m => state.parsedMeals[m.key]);
+      const scopeMeals = needMeals.length ? needMeals : getScopeMeals();
+      const gotCount = scopeMeals.filter(m => selections[m.key]).length;
+      const needCount = scopeMeals.length || 4;
+      return gotCount >= needCount ? selections : (gotCount >= 1 && needCount === 1 ? selections : null);
     }
 
     function openWifeSendModal() {
       const url = getShareUrl({ wifeDone: true });
       $('wifeSendLinkInput').value = url;
       $('wifeShortMsg').textContent = buildWifeShortMsg();
-      $('wifeSendSummary').innerHTML = getScopeMeals().map(m =>
-        `<div class="item"><span>${m.icon} ${m.label}</span><span>套餐 ${state.selections[m.key]}</span></div>`
-      ).join('');
+      const picked = buildSelectionDetailLines(getScopeMeals());
+      $('wifeSendSummary').innerHTML = picked.map(p => `
+        <div class="item" style="flex-direction:column;align-items:flex-start;gap:4px;padding:8px 0">
+          <span>${p.icon} ${p.label} · 套餐 ${p.sel}</span>
+          ${p.detail ? `<span style="color:var(--muted);font-size:0.82rem;line-height:1.5">${p.detail}</span>` : ''}
+        </div>`).join('');
       $('wifeSendModal').classList.remove('hidden');
     }
 
@@ -2493,6 +2886,7 @@
       state.shareRole = 'husband';
       state.generateMode = 'full';
       state.singleMealKey = null;
+      state.mealScope = MEALS.map(m => m.key);
 
       $('generateBtn').disabled = true;
       $('generateSingleBtn').disabled = true;
@@ -2525,9 +2919,13 @@
       }
     }
 
-    async function generateSingleMeal(mealKey) {
-      const meal = mealByKey(mealKey);
-      if (!meal) return;
+    async function generatePartialMeals(mealKeys) {
+      if (!mealKeys?.length) {
+        setStatus($('step1Status'), '请至少选择一餐', 'error');
+        return;
+      }
+      const meals = mealKeys.map(mealByKey).filter(Boolean);
+      if (!meals.length) return;
       if (!ensureApiForHusband()) return;
       savePantry();
       const ingredients = buildIngredientsText();
@@ -2543,18 +2941,20 @@
       state.selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
       state.sharedByWife = false;
       state.shareRole = 'husband';
-      state.generateMode = 'single';
-      state.singleMealKey = mealKey;
+      state.generateMode = meals.length === 4 ? 'full' : 'partial';
+      state.mealScope = meals.map(m => m.key);
+      state.singleMealKey = meals.length === 1 ? meals[0].key : null;
 
       $('generateBtn').disabled = true;
       $('generateSingleBtn').disabled = true;
-      setStatus($('step1Status'), `正在搭配${meal.label}…`);
+      setStatus($('step1Status'), `正在搭配${meals.map(m => m.label).join('、')}…`);
 
       try {
+        const mealNames = meals.map(m => `【${m.label}】`).join('、');
         const userMsg = [
-          `请只为【${meal.label}】这一餐输出计划（不要输出早餐/午餐/晚餐/宵夜中的其他餐次）。`,
-          '仍提供 A/B 两个套餐，遵守全部饮食原则（水果、🌍风味背景、3天不重样等）。',
-          '表格只需 1 行。',
+          `请只为${mealNames}输出计划（不要输出其他餐次）。`,
+          '每餐仍提供 A/B 两个套餐，遵守全部饮食原则（水果、🌍风味背景、3天不重样等）。',
+          `表格只需 ${meals.length} 行。`,
           '',
           ingredients
         ].join('\n');
@@ -2565,10 +2965,15 @@
         const reply = await callApi(state.messages);
         state.firstResponse = reply;
         state.parsedMeals = parseMealsFromResponse(reply);
-        if (!state.parsedMeals[mealKey]) {
-          const only = Object.values(state.parsedMeals)[0];
-          if (only) state.parsedMeals[mealKey] = only;
-        }
+        meals.forEach(m => {
+          if (!state.parsedMeals[m.key]) {
+            const fallback = Object.entries(state.parsedMeals).find(([k]) => !meals.some(x => x.key === k));
+            if (fallback) {
+              state.parsedMeals[m.key] = state.parsedMeals[fallback[0]];
+              delete state.parsedMeals[fallback[0]];
+            }
+          }
+        });
         state.messages.push({ role: 'assistant', content: reply });
         recordMenuHistory(state.parsedMeals);
 
@@ -2578,7 +2983,7 @@
         applyRoleUI();
         renderMealStep();
         syncUrl();
-        setStatus($('step1Status'), `${meal.label}菜单好啦，选 A 或 B ♥`, 'ok');
+        setStatus($('step1Status'), `${meals.map(m => m.label).join('、')}菜单好啦，开始选 A/B ♥`, 'ok');
       } catch (err) {
         setStatus($('step1Status'), err.message, 'error');
       } finally {
@@ -2600,12 +3005,14 @@
 
     async function confirmSelections() {
       if (!allSelected()) {
-        setStatus($('step2Status'), isSingleMealMode() ? '请先选 A 或 B' : '请先选完四餐', 'error');
+        const scope = getScopeMeals();
+        setStatus($('step2Status'), scope.length === 1 ? '请先选 A 或 B' : `请先选完${scope.map(m => m.label).join('、')}`, 'error');
         return;
       }
       if (!ensureApiForHusband()) return;
 
-      const single = isSingleMealMode() ? mealByKey(state.singleMealKey) : null;
+      const scope = getScopeMeals();
+      const single = scope.length === 1 ? scope[0] : null;
       const choiceMsg = single ? [
         `我的选择如下，请按工作流程第二步，**仅为【${single.label}】这一餐**完整输出（含风味与文化背景、Trigger、采购、做饭时间表，不要写其他餐次）：`,
         `- ${single.label}：${state.selections[single.key]}`,
@@ -2613,7 +3020,7 @@
         buildScheduleContext()
       ].join('\n') : [
         '我的选择如下，请按工作流程第二步完整输出（含第 4 部分做饭流程时间表）：',
-        MEALS.map(m => `- ${m.label}：${state.selections[m.key]}`).join('\n'),
+        scope.map(m => `- ${m.label}：${state.selections[m.key]}`).join('\n'),
         '',
         buildScheduleContext()
       ].join('\n');
@@ -2640,16 +3047,10 @@
     }
 
     function getSelectedMealsSummary() {
-      return MEALS.map(m => {
-        const sel = state.selections[m.key];
-        const data = state.parsedMeals[m.key];
-        const time = data?.time ? `（${data.time}）` : '';
-        let dish = '';
-        if (data && sel) {
-          const opt = sel === 'A' ? data.optionA : data.optionB;
-          dish = formatOptionText(opt).split('\n')[0].slice(0, 80);
-        }
-        return `${m.label}${time}：套餐 ${sel || '未选'}${dish ? ' — ' + dish : ''}`;
+      return buildSelectionDetailLines(getScopeMeals()).map(p => {
+        const time = p.time ? p.time : '';
+        const dish = p.detail ? p.detail.split(' · ')[0].slice(0, 80) : '';
+        return `${p.label}${time}：套餐 ${p.sel}${dish ? ' — ' + dish : ''}`;
       }).join('\n');
     }
 
@@ -2677,7 +3078,7 @@
         ingredients: '', firstResponse: '', parsedMeals: {},
         selections: { breakfast: '', lunch: '', dinner: '', snack: '' },
         finalResponse: '', scheduleResponse: '', sharedByWife: false, shareRole: 'husband',
-        generateMode: 'full', singleMealKey: null, messages: []
+        generateMode: 'full', singleMealKey: null, mealScope: MEALS.map(m => m.key), messages: []
       });
       if ($('extraNotes')) $('extraNotes').value = '';
       applyRoleUI();
@@ -2697,7 +3098,8 @@
 
     function wifeDoneShare() {
       if (!allSelected()) {
-        showToast(isSingleMealMode() ? '先选 A 或 B 哦～' : '先把四餐都选完哦～');
+        const scope = getScopeMeals();
+        showToast(scope.length === 1 ? '先选 A 或 B 哦～' : `先把${scope.map(m => m.label).join('、')}都选完哦～`);
         return;
       }
       state.sharedByWife = true;
@@ -2714,38 +3116,30 @@
       } catch { /* 无剪贴板权限 */ }
 
       if (!input) {
-        input = prompt('粘贴锞锞发回的短消息或链接：\n例如：老公我选好啦♥ 早餐A 午餐B 晚餐A 宵夜B') || '';
+        input = prompt('粘贴锞锞发回的链接或详细选餐说明：\n推荐发链接；文字需含【详细选择】或 早餐A 午餐B…') || '';
       }
       if (!input) return;
 
-      const shortSel = parseWifeShortSelections(input);
-      if (shortSel && Object.keys(state.parsedMeals).length) {
-        state.selections = shortSel;
-        state.sharedByWife = true;
-        $('step2Card').classList.remove('hidden');
-        if (!isWifeMode()) $('resetBtn').classList.remove('hidden');
-        renderMealStep();
-        syncUrl();
-        setStatus($('step2Status'), '已从短消息同步锞锞的选择 💕', 'ok');
-        showToast('锞锞的选择已经同步过来啦');
+      const linkData = parseSharedFromInput(input);
+      if (linkData && applySharedState(linkData)) {
+        finishWifeImport('链接');
         return;
       }
 
-      const data = parseSharedFromInput(input);
-      if (!applySharedState(data)) {
-        if (shortSel) {
-          setStatus($('step2Status'), '短消息已识别，请先生成菜单再导入', 'error');
-        } else {
-          setStatus($('step2Status'), '无法识别，请粘贴完整链接或短消息', 'error');
+      const shortSel = parseWifeShortSelections(input);
+      if (shortSel) {
+        if (!Object.keys(state.parsedMeals).length) {
+          setStatus($('step2Status'), '短消息已识别，但缺少菜单。请粘贴锞锞发的完整链接', 'error');
+          showToast('请让锞锞发链接，或你先生成菜单再导入文字');
+          return;
         }
+        state.selections = shortSel;
+        state.sharedByWife = true;
+        finishWifeImport('消息');
         return;
       }
-      $('step2Card').classList.remove('hidden');
-      if (!isWifeMode()) $('resetBtn').classList.remove('hidden');
-      renderMealStep();
-      syncUrl();
-      setStatus($('step2Status'), '已同步锞锞的选择 💕', 'ok');
-      showToast('锞锞的选择已经同步过来啦');
+
+      setStatus($('step2Status'), '无法识别，请粘贴完整链接或含【详细选择】的文字', 'error');
     }
 
     function initFromSharedLink() {
@@ -2764,7 +3158,9 @@
       $('step2Card').classList.remove('hidden');
       if (!isWifeMode()) $('resetBtn').classList.remove('hidden');
       renderMealStep();
-      if (state.sharedByWife && isApiConfigured()) {
+      if (state.sharedByWife && isHusbandReviewMode()) {
+        showHusbandReviewReady('链接');
+      } else if (state.sharedByWife && isApiConfigured()) {
         showToast('锞锞的选择已加载，API 已自动读取，可直接生成方案+时间表');
       }
     }
@@ -2788,13 +3184,23 @@
       $('importExcelBtn').addEventListener('click', () => $('excelFileInput').click());
       $('excelFileInput').addEventListener('change', e => importExcelFile(e.target.files[0]));
       $('generateBtn').addEventListener('click', generateMenu);
-      $('generateSingleBtn').addEventListener('click', () => generateSingleMeal(pickedSingleMeal));
+      $('generateSingleBtn').addEventListener('click', () => generatePartialMeals([...pickedMeals]));
       document.querySelectorAll('.meal-pick-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          pickedSingleMeal = btn.dataset.meal;
-          document.querySelectorAll('.meal-pick-btn').forEach(b => b.classList.toggle('active', b === btn));
+          const key = btn.dataset.meal;
+          if (pickedMeals.has(key)) {
+            if (pickedMeals.size > 1) pickedMeals.delete(key);
+            else showToast('至少选择一餐哦');
+          } else {
+            pickedMeals.add(key);
+          }
+          document.querySelectorAll('.meal-pick-btn').forEach(b => {
+            b.classList.toggle('active', pickedMeals.has(b.dataset.meal));
+          });
+          updatePartialPickHint();
         });
       });
+      updatePartialPickHint();
       $('confirmBtn').addEventListener('click', confirmSelections);
       $('exportBtn').addEventListener('click', exportTxt);
       const savedStart = localStorage.getItem('hm_cookStartTime');
@@ -2812,7 +3218,10 @@
       $('wifeDoneBtn').addEventListener('click', wifeDoneShare);
       $('importLinkBtn').addEventListener('click', importLink);
       $('prevMealBtn').addEventListener('click', goPrevMeal);
-      $('restartPickBtn').addEventListener('click', restartSelection);
+      $('restartPickBtn').addEventListener('click', () => {
+        if (isHusbandReviewMode()) importLink();
+        else restartSelection();
+      });
       $('backToSelectBtn').addEventListener('click', () => {
         $('step3Card').classList.add('hidden');
         renderMealStep();
@@ -2834,13 +3243,18 @@
 
       $('shareLinkInput').addEventListener('click', function() { this.select(); });
 
+      $('wifeReviewBtn').addEventListener('click', openWifeReviewModal);
+      $('wifeReviewBtn2').addEventListener('click', openWifeReviewModal);
+      $('closeWifeReviewModal').addEventListener('click', () => $('wifeReviewModal').classList.add('hidden'));
+      $('wifeReviewModal').addEventListener('click', e => { if (e.target === $('wifeReviewModal')) $('wifeReviewModal').classList.add('hidden'); });
+
       $('closeWifeSendModal').addEventListener('click', () => $('wifeSendModal').classList.add('hidden'));
       $('wifeSendModal').addEventListener('click', e => { if (e.target === $('wifeSendModal')) $('wifeSendModal').classList.add('hidden'); });
 
       $('wifeCopyShortBtn').addEventListener('click', async () => {
         const ok = await copyText(buildWifeShortMsg());
         $('wifeSendModal').classList.add('hidden');
-        showToast(ok ? '短消息已复制，去微信发给老公吧 💕' : '复制失败，请手动复制');
+        showToast(ok ? '详细说明已复制，去微信发给老公吧 💕' : '复制失败，请手动复制');
       });
 
       $('wifeCopyLinkBtn').addEventListener('click', async () => {
