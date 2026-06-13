@@ -1051,7 +1051,8 @@
         <input type="text" id="shareLinkInput" readonly />
         <button class="btn-wechat" id="copyLinkOnlyBtn" type="button">复制链接</button>
       </div>
-      <p class="hint" style="margin-top:8px;text-align:left">链接走「外网分享地址」。锞锞在卧室连别的 WiFi 也能开。</p>
+      <p class="hint" style="margin-top:8px;text-align:left">链接走「外网分享地址」。若仍提示 URI too long，请让锞锞<strong>长按链接 → 在 Safari 打开</strong>，或改用短消息选餐。</p>
+      <button class="btn-secondary btn-full hidden" id="shareShortMsgBtn" type="button">链接太长？复制选餐说明给锞锞</button>
       <button class="btn-ghost btn-full" id="closeShareModal" type="button">关闭</button>
     </div>
   </div>
@@ -1073,6 +1074,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
   <script>
     const SYSTEM_PROMPT = `# 角色
 你是一位专业的家庭营养师兼国际健康料理厨师，熟悉中式、日式、地中海、东南亚、拉美等世界各地利于减脂健康的做法，并能用深圳当地食材落地。
@@ -2075,10 +2077,11 @@
       const selStr = data.s || '';
       const selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
       MEALS.forEach((m, i) => { if (selStr[i]) selections[m.key] = selStr[i]; });
+      const rawMeals = data.m || data.parsedMeals || {};
       return {
         ...data,
         ingredients: data.i || data.ingredients || '',
-        parsedMeals: data.m || data.parsedMeals || {},
+        parsedMeals: expandCompactMeals(rawMeals),
         selections: data.selections || selections,
         sharedByWife: !!(data.w ?? data.sharedByWife),
         shareRole: (data.r === 'w' || data.shareRole === 'wife') ? 'wife' : 'husband',
@@ -2087,21 +2090,66 @@
       };
     }
 
+    function truncateForShare(text, max) {
+      const t = optionBodyWithoutOrigin(text).replace(/\s+/g, ' ').trim();
+      return t.length > max ? t.slice(0, max) + '…' : t;
+    }
+
+    function compactMealsForShare(parsedMeals) {
+      const out = {};
+      MEALS.forEach(m => {
+        const d = parsedMeals[m.key];
+        if (!d) return;
+        out[m.key] = {
+          t: d.time || '',
+          a: truncateForShare(d.optionA, 220),
+          b: truncateForShare(d.optionB, 220),
+          c: (d.calories || '').slice(0, 36),
+          oa: (d.originA || extractOrigin(d.optionA) || '').slice(0, 60),
+          ob: (d.originB || extractOrigin(d.optionB) || '').slice(0, 60)
+        };
+      });
+      return out;
+    }
+
+    function expandCompactMeals(m) {
+      if (!m || typeof m !== 'object') return {};
+      const out = {};
+      for (const [key, d] of Object.entries(m)) {
+        if (!d) continue;
+        if (d.a !== undefined || d.b !== undefined) {
+          out[key] = {
+            time: d.t || '',
+            optionA: d.a || '',
+            optionB: d.b || '',
+            calories: d.c || '',
+            originA: d.oa || '',
+            originB: d.ob || ''
+          };
+        } else {
+          out[key] = d;
+        }
+      }
+      return out;
+    }
+
     function buildPayload(extra, lite) {
       if (lite) {
         const sel = MEALS.map(m => state.selections[m.key] || '').join('');
         const role = (extra.shareRole ?? state.shareRole) === 'wife' ? 'w' : 'h';
-        return {
-          v: 4,
+        const forWife = extra.forWife || role === 'w';
+        const payload = {
+          v: 5,
           lite: true,
-          i: state.ingredients,
-          m: state.parsedMeals,
+          m: forWife ? compactMealsForShare(state.parsedMeals) : state.parsedMeals,
           s: sel,
           w: (extra.sharedByWife ?? state.sharedByWife) ? 1 : 0,
           r: role,
-          gm: isSingleMealMode() ? 's' : 'f',
-          sk: isSingleMealMode() ? MEALS.findIndex(m => m.key === state.singleMealKey) : undefined
+          gm: isSingleMealMode() ? 's' : 'f'
         };
+        if (isSingleMealMode()) payload.sk = MEALS.findIndex(m => m.key === state.singleMealKey);
+        if (!forWife && state.ingredients) payload.i = state.ingredients.slice(0, 400);
+        return payload;
       }
       return {
         v: 4,
@@ -2207,13 +2255,22 @@
     }
 
     function encodeState(extra, lite) {
-      return btoa(unescape(encodeURIComponent(JSON.stringify(buildPayload(extra, lite)))));
+      const json = JSON.stringify(buildPayload(extra, lite));
+      if (typeof LZString !== 'undefined') {
+        const compressed = LZString.compressToEncodedURIComponent(json);
+        if (compressed && compressed.length + 2 < json.length) return 'z' + compressed;
+      }
+      return toUrlSafe(btoa(unescape(encodeURIComponent(json))));
     }
 
     function decodeState(encoded) {
       if (!encoded) return null;
       try {
         const raw = encoded.replace(/^#/, '');
+        if (raw.startsWith('z') && typeof LZString !== 'undefined') {
+          const json = LZString.decompressFromEncodedURIComponent(raw.slice(1));
+          if (json) return expandLitePayload(JSON.parse(json));
+        }
         return expandLitePayload(JSON.parse(decodeURIComponent(escape(atob(fromUrlSafe(raw))))));
       } catch { return null; }
     }
@@ -2307,11 +2364,23 @@
       const forWife = opts.forWife ?? false;
       const wifeDone = opts.wifeDone ?? false;
       const lite = opts.lite ?? (forWife || wifeDone);
-      const encoded = toUrlSafe(encodeState({
+      const encoded = encodeState({
         shareRole: wifeDone ? 'husband' : (forWife ? 'wife' : state.shareRole),
-        sharedByWife: wifeDone || state.sharedByWife
-      }, lite));
+        sharedByWife: wifeDone || state.sharedByWife,
+        forWife
+      }, lite);
       return getShareBaseUrl() + '?d=' + encoded;
+    }
+
+    function buildWifeOpenInstructions() {
+      const url = getShareUrl({ forWife: true, lite: true });
+      return [
+        '亲爱的锞锞，老公给你准备了今日菜单～',
+        '请复制下面整段链接，粘贴到 Safari 地址栏打开（不要用微信里直接点）：',
+        url,
+        '',
+        '如果打不开，让老公重新发一次链接，或在页面里一顿一顿选完发短消息给老公。'
+      ].join('\n');
     }
 
     function openShareModal() {
@@ -2320,7 +2389,13 @@
         $('settingsPanel').classList.add('open');
         showToast('请先设置外网分享地址，锞锞不同 WiFi 才能打开');
       }
-      $('shareLinkInput').value = getShareUrl({ forWife: true, lite: true });
+      const url = getShareUrl({ forWife: true, lite: true });
+      $('shareLinkInput').value = url;
+      const long = url.length > 2048;
+      $('shareShortMsgBtn').classList.toggle('hidden', !long);
+      if (long) {
+        showToast('链接较长，请让锞锞复制到 Safari 打开，或点下方「复制选餐说明」');
+      }
       $('shareModal').classList.remove('hidden');
     }
 
@@ -2713,7 +2788,12 @@
 
       $('copyLinkOnlyBtn').addEventListener('click', async () => {
         const ok = await copyText($('shareLinkInput').value);
-        showToast(ok ? '链接已复制，去微信发给锞锞吧 💕' : '复制失败');
+        showToast(ok ? '链接已复制，让锞锞粘贴到 Safari 打开' : '复制失败');
+      });
+
+      $('shareShortMsgBtn').addEventListener('click', async () => {
+        const ok = await copyText(buildWifeOpenInstructions());
+        showToast(ok ? '已复制说明+链接，发微信给锞锞' : '复制失败');
       });
 
       $('shareLinkInput').addEventListener('click', function() { this.select(); });
