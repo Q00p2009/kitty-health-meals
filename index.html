@@ -1,0 +1,2747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kitty厨房 · 一日四餐</title>
+  <style>
+    :root {
+      --pink: #ff6b9d;
+      --pink-light: #ffb3c6;
+      --pink-pale: #fff0f5;
+      --pink-soft: #ffe4ec;
+      --red-bow: #e63956;
+      --card: #ffffff;
+      --text: #5c3d4a;
+      --muted: #9a7a86;
+      --border: #ffc8d8;
+      --shadow: 0 10px 30px rgba(255, 107, 157, 0.18);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--pink-pale);
+      background-image:
+        radial-gradient(circle at 20% 15%, rgba(255, 179, 198, 0.45) 0%, transparent 42%),
+        radial-gradient(circle at 80% 80%, rgba(255, 107, 157, 0.2) 0%, transparent 40%),
+        radial-gradient(circle, #ffd6e3 1.5px, transparent 1.5px);
+      background-size: auto, auto, 28px 28px;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 16px 14px 40px;
+    }
+
+    /* Hello Kitty 风格头部 */
+    .kitty-header {
+      text-align: center;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .kitty-face {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 10px;
+      position: relative;
+    }
+
+    .kitty-face .ear {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border: 3px solid #333;
+      border-radius: 50% 50% 10% 10%;
+      top: 2px;
+    }
+    .kitty-face .ear.left { left: 6px; transform: rotate(-25deg); }
+    .kitty-face .ear.right { right: 6px; transform: rotate(25deg); }
+
+    .kitty-face .face {
+      position: absolute;
+      width: 64px;
+      height: 58px;
+      background: #fff;
+      border: 3px solid #333;
+      border-radius: 50%;
+      left: 4px;
+      top: 12px;
+    }
+
+    .kitty-face .bow {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+    .kitty-face .bow::before,
+    .kitty-face .bow::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: var(--red-bow);
+      border-radius: 50%;
+      top: 0;
+    }
+    .kitty-face .bow::before { left: -10px; }
+    .kitty-face .bow::after { right: -10px; left: auto; }
+    .kitty-face .bow-center {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #c1124e;
+      border-radius: 3px;
+      left: 50%;
+      top: 2px;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .kitty-face .eye {
+      position: absolute;
+      width: 5px;
+      height: 8px;
+      background: #333;
+      border-radius: 50%;
+      top: 30px;
+    }
+    .kitty-face .eye.left { left: 18px; }
+    .kitty-face .eye.right { right: 18px; }
+
+    .kitty-face .nose {
+      position: absolute;
+      width: 8px;
+      height: 6px;
+      background: #f4a261;
+      border-radius: 50%;
+      left: 50%;
+      top: 38px;
+      transform: translateX(-50%);
+    }
+
+    .kitty-face .whisker {
+      position: absolute;
+      height: 2px;
+      background: #333;
+      width: 14px;
+      top: 42px;
+    }
+    .kitty-face .whisker.l1 { left: 2px; transform: rotate(10deg); }
+    .kitty-face .whisker.l2 { left: 2px; top: 48px; transform: rotate(-5deg); }
+    .kitty-face .whisker.r1 { right: 2px; transform: rotate(-10deg); }
+    .kitty-face .whisker.r2 { right: 2px; top: 48px; transform: rotate(5deg); }
+
+    .kitty-header h1 {
+      margin: 0 0 4px;
+      font-size: 1.45rem;
+      color: var(--pink);
+      letter-spacing: 1px;
+    }
+
+    .kitty-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '🎀';
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 1.1rem;
+      opacity: 0.5;
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+      color: var(--pink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink), var(--pink-light));
+      color: #fff;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(255, 107, 157, 0.4);
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    textarea, input[type="text"], input[type="password"] {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: var(--pink-pale);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.15);
+    }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 6px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    button:active { transform: scale(0.97); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), #ff85b8);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(255, 107, 157, 0.35);
+    }
+
+    .btn-secondary {
+      background: var(--pink-pale);
+      color: var(--pink);
+      border: 2px solid var(--border);
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, #ff9ebb, var(--pink-light));
+      color: #fff;
+    }
+
+    .btn-wechat {
+      background: #07c160;
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+
+    .settings-toggle {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 0;
+      font-weight: 500;
+      border-radius: 0;
+    }
+
+    .settings-panel { display: none; margin-top: 6px; }
+    .settings-panel.open { display: block; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* 进度条 */
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding: 0 4px;
+    }
+
+    .progress-dot {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+
+    .progress-dot::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      z-index: 0;
+    }
+
+    .progress-dot:last-child::before { display: none; }
+
+    .progress-dot .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--pink-pale);
+      border: 2px solid var(--border);
+      font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s;
+    }
+
+    .progress-dot.done .icon {
+      background: var(--pink-light);
+      border-color: var(--pink);
+    }
+
+    .progress-dot.active .icon {
+      background: linear-gradient(135deg, var(--pink), var(--pink-light));
+      border-color: var(--pink);
+      transform: scale(1.12);
+      box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    }
+
+    .progress-dot .label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .progress-dot.active .label,
+    .progress-dot.done .label {
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .progress-dot.clickable { cursor: pointer; }
+
+    .progress-dot.clickable:hover .icon {
+      transform: scale(1.08);
+      box-shadow: 0 4px 12px rgba(255, 107, 157, 0.45);
+    }
+
+    .progress-dot.clickable:hover .icon {
+      transform: scale(1.08);
+      box-shadow: 0 4px 12px rgba(255, 107, 157, 0.45);
+    }
+
+    .single-meal-box { margin-top: 14px; padding-top: 14px; border-top: 2px dashed var(--border); }
+
+    .meal-pick-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 420px) {
+      .meal-pick-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .meal-pick-btn {
+      border: 2px solid var(--border);
+      background: var(--pink-pale);
+      border-radius: 12px;
+      padding: 10px 6px;
+      font-size: 0.82rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .meal-pick-btn.active, .meal-pick-btn:hover {
+      border-color: var(--pink);
+      background: #fff;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .single-meal-badge {
+      text-align: center;
+      padding: 10px;
+      background: var(--pink-pale);
+      border-radius: 14px;
+      border: 2px solid var(--pink-light);
+      font-size: 0.95rem;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .opt-origin {
+      font-size: 0.82rem;
+      color: #6b5b8a;
+      background: #f8f4ff;
+      border-left: 3px solid #b794f6;
+      padding: 8px 10px;
+      margin: 8px 0;
+      border-radius: 0 8px 8px 0;
+      line-height: 1.5;
+    }
+
+    /* 当前餐次 */
+    .meal-step {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .meal-step .meal-title {
+      font-size: 1.35rem;
+      color: var(--pink);
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+
+    .meal-step .meal-time {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .meal-step .step-hint {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* A/B 选项卡片 */
+    .option-cards {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-card {
+      width: 100%;
+      text-align: left;
+      padding: 16px;
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      background: linear-gradient(145deg, #fff, var(--pink-pale));
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+    }
+
+    .option-card:hover {
+      border-color: var(--pink-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(255, 107, 157, 0.15);
+    }
+
+    .option-card.selected {
+      border-color: var(--pink);
+      background: linear-gradient(145deg, #fff5f8, #ffe8f0);
+      box-shadow: 0 6px 20px rgba(255, 107, 157, 0.25);
+    }
+
+    .option-card .opt-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 8px;
+    }
+
+    .option-card .opt-tag .badge {
+      background: var(--pink);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .option-card .opt-content {
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .option-card .opt-cal {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .option-card.selected::after {
+      content: '♥';
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      color: var(--pink);
+      font-size: 1.2rem;
+    }
+
+    /* 已选摘要 */
+    .picked-summary {
+      background: var(--pink-pale);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+    }
+
+    .picked-summary .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .picked-summary .item:last-child { border-bottom: none; }
+
+    .picked-summary .item span:first-child { color: var(--muted); }
+    .picked-summary .item span:last-child { color: var(--pink); font-weight: 600; }
+
+    /* 完成页 */
+    .all-done-box {
+      text-align: center;
+      padding: 20px 10px;
+    }
+
+    .all-done-box .big-heart {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .all-done-box h3 {
+      margin: 0 0 6px;
+      color: var(--pink);
+      font-size: 1.2rem;
+    }
+
+    .share-banner {
+      background: linear-gradient(135deg, #fff5f8, #ffe8f0);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .share-banner.wife-done {
+      background: linear-gradient(135deg, #fff8e8, #ffeccc);
+      border-color: #ffd8a8;
+    }
+
+    .result-box {
+      background: var(--pink-pale);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+
+    .result-box h1, .result-box h2, .result-box h3 {
+      color: var(--pink);
+      margin-top: 1.2em;
+      margin-bottom: 0.5em;
+    }
+
+    .result-box h1:first-child, .result-box h2:first-child, .result-box h3:first-child {
+      margin-top: 0;
+    }
+
+    .result-box table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin: 12px 0;
+    }
+
+    .result-box th, .result-box td {
+      border: 1px solid var(--border);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .result-box th { background: #ffe8f0; }
+
+    .result-box ul, .result-box ol { padding-left: 1.3em; }
+
+    .status {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      min-height: 1.3em;
+    }
+
+    .status.error { color: #e63956; }
+    .status.ok { color: var(--pink); }
+
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--pink);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeIn 0.35s ease; }
+
+    .hidden { display: none !important; }
+
+    details summary {
+      cursor: pointer;
+      color: var(--pink);
+      font-size: 0.85rem;
+    }
+
+    details { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+
+    .api-ready {
+      color: var(--pink);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .pantry-row {
+      display: grid;
+      grid-template-columns: 1.2fr 0.7fr 0.9fr auto;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    @media (max-width: 520px) {
+      .pantry-row { grid-template-columns: 1fr 1fr; }
+      .pantry-row .pantry-del { grid-column: 2; }
+    }
+
+    .pantry-row input, .pantry-row select {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      background: var(--pink-pale);
+    }
+
+    .pantry-del {
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 8px;
+      font-size: 1rem;
+    }
+
+    .stock-result {
+      margin-top: 12px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 16px;
+    }
+
+    /* 媳妇欢迎卡 */
+    .wife-welcome {
+      background: linear-gradient(135deg, #fff5f8, #ffe0ec);
+      border: 2px solid var(--pink-light);
+      border-radius: 18px;
+      padding: 18px 16px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .wife-welcome .big-emoji { font-size: 2.2rem; margin-bottom: 6px; }
+    .wife-welcome h3 { margin: 0 0 6px; color: var(--pink); font-size: 1.15rem; }
+    .wife-welcome p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+    .love-hint {
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: var(--pink);
+      text-align: center;
+      margin-bottom: 12px;
+      border: 1px dashed var(--pink-light);
+    }
+
+    /* 分享弹窗 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(92, 61, 74, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 22px 18px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(255, 107, 157, 0.3);
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-card h3 { margin: 0 0 8px; color: var(--pink); font-size: 1.15rem; }
+    .modal-card .modal-desc { color: var(--muted); font-size: 0.85rem; margin: 0 0 14px; line-height: 1.5; }
+
+    .qr-box {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .qr-box canvas { display: block; width: 180px; height: 180px; }
+
+    .qr-tip {
+      font-size: 0.82rem;
+      color: var(--pink);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .or-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin: 14px 0;
+    }
+
+    .or-line::before, .or-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .link-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .link-box input {
+      flex: 1;
+      font-size: 0.78rem;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: var(--pink-pale);
+      color: var(--text);
+      min-width: 0;
+    }
+
+    .link-box button {
+      flex-shrink: 0;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+
+    .btn-full { width: 100%; margin-top: 8px; }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(92, 61, 74, 0.92);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      z-index: 200;
+      animation: fadeIn 0.3s ease;
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .husband-only.hidden, .wife-only.hidden { display: none !important; }
+
+    .short-msg-box {
+      background: var(--pink-pale);
+      border: 2px solid var(--pink-light);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: left;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      word-break: break-all;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      70% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .pop-in { animation: pop 0.4s ease; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="kitty-header">
+      <div class="kitty-face">
+        <div class="ear left"></div>
+        <div class="ear right"></div>
+        <div class="face"></div>
+        <div class="bow"><div class="bow-center"></div></div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="nose"></div>
+        <div class="whisker l1"></div>
+        <div class="whisker l2"></div>
+        <div class="whisker r1"></div>
+        <div class="whisker r2"></div>
+      </div>
+      <h1>Kitty 厨房</h1>
+      <p id="headerSubtitle">一日四餐 · 温馨减脂菜单</p>
+    </header>
+
+    <div class="wife-welcome wife-only hidden" id="wifeWelcome">
+      <div class="big-emoji">💕</div>
+      <h3>亲爱的锞锞，老公给你准备了今日菜单</h3>
+      <p>一顿一顿慢慢选就好<br>不用填食材，也不用配置 API<br>选完点下方「告诉老公」就行啦</p>
+      <p style="margin-top:8px;font-size:0.82rem;color:#9a7a86">打不开？长按链接 →「在浏览器中打开」（Safari/Chrome，别用微信里直接开）</p>
+    </div>
+
+    <div class="card hidden" id="brokenLinkCard" style="border-color:#ffd8a8;background:#fff8e8">
+      <h2 style="color:#c1121f" id="brokenLinkTitle">😅 链接打不开</h2>
+      <p style="margin:0;font-size:0.9rem;color:#5c3d4a" id="brokenLinkDesc">请让老公重新发链接，或用<strong>短消息</strong>告诉他你的选择。</p>
+    </div>
+
+    <div class="card husband-only" id="settingsCard">
+      <button class="settings-toggle" id="settingsToggle" type="button">🎀 API 设置（首次请先配置）</button>
+      <p class="api-ready hidden" id="apiReadyHint">✓ API 已保存在本机，打开锞锞链接会自动读取</p>
+      <div class="settings-panel" id="settingsPanel">
+        <div class="grid-2">
+          <div>
+            <label for="apiBase">API 地址</label>
+            <input type="text" id="apiBase" placeholder="https://api.deepseek.com/v1" />
+          </div>
+          <div>
+            <label for="apiModel">模型</label>
+            <input type="text" id="apiModel" placeholder="deepseek-v4-flash" />
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label for="apiKey">API Key</label>
+          <input type="password" id="apiKey" placeholder="sk-..." />
+          <div class="hint">自动保存到本机浏览器，只需配置一次（请用 Safari/Chrome，别用微信内置浏览器）</div>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:2px dashed var(--border)">
+          <label for="publicBaseUrl">🌐 外网分享地址（锞锞不同 WiFi 也能打开）</label>
+          <input type="text" id="publicBaseUrl" placeholder="https://xxx.trycloudflare.com 或 GitHub Pages 地址" />
+          <div class="hint" id="publicBaseHint">发给锞锞的链接会用这个地址，而不是 192.168 家里 WiFi 地址</div>
+          <details style="margin-top:8px;font-size:0.85rem;color:var(--muted)">
+            <summary style="cursor:pointer;color:var(--pink)">怎么获取外网地址？</summary>
+            <ol style="margin:8px 0;padding-left:1.2em;line-height:1.7">
+              <li><strong>永久（推荐）</strong>：双击 <code>deploy-github.command</code>，一次部署，不会再 Error 1033</li>
+              <li><strong>临时</strong>：双击 <code>start-with-share.command</code>，<strong>黑色窗口必须一直开着</strong>，关了链接就失效</li>
+            </ol>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="card husband-only" id="pantryCard">
+      <h2><span class="step-badge">1</span> 家里有什么？</h2>
+      <div class="grid-2" style="margin-bottom:10px">
+        <div>
+          <label for="userCity">所在城市</label>
+          <input type="text" id="userCity" value="广东省深圳市" />
+        </div>
+        <div>
+          <label for="cookDate">做饭日期</label>
+          <input type="date" id="cookDate" />
+        </div>
+      </div>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn-secondary" id="downloadTemplateBtn" type="button">📥 下载 Excel 模板</button>
+        <button class="btn-primary" id="importExcelBtn" type="button">📤 导入库存</button>
+        <input type="file" id="excelFileInput" accept=".csv,.xlsx,.xls" class="hidden" />
+      </div>
+      <label>库存清单（名称必填；数量、日期可选）</label>
+      <div id="pantryList"></div>
+      <div class="btn-row">
+        <button class="btn-secondary" id="addPantryBtn" type="button">+ 添加一项</button>
+      </div>
+      <div class="hint">Excel 导入的食材，没写数量也视为家里有。购买日期写 <strong>2026/5/1</strong> 格式；推荐 .xlsx 模板避免乱码</div>
+      <div style="margin-top:12px">
+        <label for="wifePrefs">锞锞口味偏好（可选，自动保存）</label>
+        <textarea id="wifePrefs" rows="3" placeholder="如：喜欢番茄、酸奶、泰式冬阴功风味、不爱香菜…&#10;不健康或不符合减脂的偏好，AI 会自动忽略" style="min-height:72px"></textarea>
+        <div class="hint">健康第一：偏好只在符合减脂/术后恢复时参考</div>
+      </div>
+      <div style="margin-top:12px">
+        <label for="extraNotes">补充说明（可选）</label>
+        <textarea id="extraNotes" rows="2" placeholder="如：今天想清淡一点、不吃某样…" style="min-height:56px"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="generateBtn" type="button">✨ 生成一日四餐菜单</button>
+        <button class="btn-secondary hidden" id="resetBtn" type="button">重新开始</button>
+      </div>
+      <div class="single-meal-box">
+        <label>只想单独做某一餐？</label>
+        <div class="meal-pick-row" id="mealPickRow">
+          <button type="button" class="meal-pick-btn active" data-meal="breakfast">🌅 早餐</button>
+          <button type="button" class="meal-pick-btn" data-meal="lunch">🍱 午餐</button>
+          <button type="button" class="meal-pick-btn" data-meal="dinner">🌇 晚餐</button>
+          <button type="button" class="meal-pick-btn" data-meal="snack">🌙 宵夜</button>
+        </div>
+        <button class="btn-accent btn-full" id="generateSingleBtn" type="button">✨ 单独生成所选餐次</button>
+        <div class="hint">只出这一餐的 A/B 选项与后续做法，适合临时加做一顿</div>
+      </div>
+      <div class="status" id="step1Status"></div>
+      <div class="status" id="stockStatus"></div>
+    </div>
+
+    <div class="card hidden" id="step2Card">
+      <h2><span class="step-badge">2</span> 一顿一顿来选</h2>
+      <p class="hint husband-only" id="step2Hint" style="margin:-6px 0 12px">发给锞锞选也行；她没选的话，你自己点 A/B 就好</p>
+
+      <div class="progress-bar" id="progressBar"></div>
+
+      <div id="mealStepArea" class="fade-in"></div>
+
+      <div id="allDoneArea" class="hidden">
+        <div class="all-done-box pop-in">
+          <div class="big-heart">💕</div>
+          <h3 id="allDoneTitle">四餐都选好啦！</h3>
+          <p id="allDoneDesc" style="color:var(--muted);font-size:0.9rem;margin:0">确认无误就可以生成详细做法和采购清单</p>
+        </div>
+      </div>
+
+      <div class="btn-row" id="navBtns">
+        <button class="btn-ghost hidden" id="prevMealBtn" type="button">← 上一餐</button>
+        <button class="btn-ghost hidden husband-only" id="restartPickBtn" type="button">重新选四餐</button>
+      </div>
+
+      <div class="btn-row hidden wife-only" id="finalPickBtns">
+        <button class="btn-wechat btn-full" id="wifeDoneBtn" type="button">💌 告诉老公我选好了</button>
+      </div>
+
+      <div class="grid-2 husband-only" id="cookPrefBox" style="margin-top:12px;display:none">
+        <div>
+          <label for="cookStartTime">几点开始准备</label>
+          <input type="time" id="cookStartTime" value="07:00" />
+        </div>
+        <div>
+          <label for="cookStyle">做饭节奏</label>
+          <select id="cookStyle" style="width:100%;border:2px solid var(--border);border-radius:10px;padding:10px;background:var(--pink-pale)">
+            <option value="efficient">高效并行（推荐）</option>
+            <option value="relaxed">从容不赶时间</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-row husband-only">
+        <button class="btn-wechat" id="shareBtn" type="button">💕 发给锞锞选餐</button>
+        <button class="btn-secondary" id="importLinkBtn" type="button">📥 锞锞发回选择了</button>
+        <button class="btn-primary hidden" id="confirmBtn" type="button">生成方案+做饭时间表 →</button>
+      </div>
+      <div class="status" id="step2Status"></div>
+    </div>
+
+    <div class="card hidden" id="step3Card">
+      <h2><span class="step-badge">3</span> 详细方案 + 做饭时间表</h2>
+      <p class="hint" style="margin:-6px 0 12px">已包含推荐理由、采购清单、做法和按时间排序的做饭流程</p>
+      <div class="result-box" id="finalResult"></div>
+
+      <div class="btn-row">
+        <button class="btn-accent" id="exportBtn" type="button">📄 导出 TXT 买菜做饭用</button>
+        <button class="btn-secondary" id="backToSelectBtn" type="button">返回修改</button>
+      </div>
+      <div class="status" id="step3Status"></div>
+    </div>
+
+    <footer>🌸 不同 WiFi 请用 start-with-share.command · 温馨下厨每一天</footer>
+  </div>
+
+  <!-- 分享给媳妇弹窗 -->
+  <div class="modal-overlay hidden" id="shareModal">
+    <div class="modal-card">
+      <h3>💕 发给锞锞选餐</h3>
+      <div id="shareRemoteHint" class="hidden" style="background:#fff8e8;border:2px solid #ffd8a8;border-radius:12px;padding:10px;margin-bottom:12px;font-size:0.88rem;text-align:left;line-height:1.6"></div>
+      <p class="modal-desc">复制链接发微信，锞锞<strong>长按链接 → 在浏览器打开</strong>（Safari/Chrome）</p>
+      <div class="link-box">
+        <input type="text" id="shareLinkInput" readonly />
+        <button class="btn-wechat" id="copyLinkOnlyBtn" type="button">复制链接</button>
+      </div>
+      <p class="hint" style="margin-top:8px;text-align:left">链接走「外网分享地址」。锞锞在卧室连别的 WiFi 也能开。</p>
+      <button class="btn-ghost btn-full" id="closeShareModal" type="button">关闭</button>
+    </div>
+  </div>
+
+  <!-- 媳妇发给老公弹窗 -->
+  <div class="modal-overlay hidden" id="wifeSendModal">
+    <div class="modal-card pop-in">
+      <h3>💌 告诉老公吧</h3>
+      <p class="modal-desc">推荐：复制下面<strong>短消息</strong>发微信给老公<br>最简单，不用发长链接</p>
+      <div class="short-msg-box" id="wifeShortMsg"></div>
+      <button class="btn-wechat btn-full" id="wifeCopyShortBtn" type="button">① 复制短消息发给老公</button>
+      <div class="or-line">或者发链接</div>
+      <div class="picked-summary" id="wifeSendSummary" style="text-align:left;margin-bottom:12px"></div>
+      <div class="link-box">
+        <input type="text" id="wifeSendLinkInput" readonly />
+        <button class="btn-secondary" id="wifeCopyLinkBtn" type="button">② 复制链接</button>
+      </div>
+      <button class="btn-ghost btn-full" id="closeWifeSendModal" type="button">关闭</button>
+    </div>
+  </div>
+
+  <script>
+    const SYSTEM_PROMPT = `# 角色
+你是一位专业的家庭营养师兼国际健康料理厨师，熟悉中式、日式、地中海、东南亚、拉美等世界各地利于减脂健康的做法，并能用深圳当地食材落地。
+
+# 背景
+- 用餐对象：我（老公）和我的妻子锞锞，共2人，所有分量按2人计算
+- 妻子锞锞情况：医生明确要求她减重；此前因工作压力大有暴饮暴食、常吃宵夜和外卖的习惯
+- 做饭场景：主要在休息日，我负责做一日四餐（早餐、午餐、晚餐、宵夜）
+- 忌口/过敏：无
+- 厨房设备：齐全（炒锅、蒸锅、电饭煲、空气炸锅、烤箱等均可使用）
+- 我的厨艺：熟练，做法不限难度，但步骤要写详细（火候、时长、调料克数）
+
+# 饮食原则
+1. 热量适度控制、温和减重，保证蛋白质充足、营养均衡，不搞极端节食
+2. 少油少盐少糖，优先蒸、煮、炖、凉拌、空气炸锅、少油快炒
+3. 主食粗细搭配（糙米、燕麦、玉米、红薯、杂粮饭等占一部分）
+4. 宵夜必须清淡、低热量、易消化，目标是帮她逐步戒掉重口味宵夜
+5. 术后恢复期：食材温和好消化，少吃生冷辛辣刺激；补品类（蜂王浆等高雌激素食物）不出现在菜单中
+6. 优先使用我提供的现有食材；**只写了名称、没写数量的，也视为家中已有**，不要当作缺货
+7. 若提供了购买日期，才判断新鲜度；**没写购买日期的不要推断已用完**
+8. 我们是深圳家庭，采购以当地当季可买到的为准；**菜式可国际化**（如地中海烤蔬、日式定食、泰式青咖喱减油版、墨西哥 bowl、韩定轻食等），只要利于减脂健康均可推荐
+9. **每餐每个套餐（A 和 B）都必须含 1 样水果推荐**（写清名称、份量、何时吃：随餐/餐后/两餐之间；选低糖、当季、易买）
+10. 若我提供了「锞锞口味偏好」，在**符合减脂与术后恢复**的前提下尽量满足；若偏好不健康（如炸鸡、奶茶、高糖甜品、重油重辣），**直接忽略该偏好并不要解释**
+11. 若我提供了「近3天已出现过的套餐」清单，**今日 8 个选项（四餐×AB）的主菜、主食、做法思路均不得与清单重复**；可换食材、换做法、换风味，但让人一眼看出不是同一道菜
+
+# 工作流程（严格分两步）
+
+## 第一步：当我输入现有食材后
+输出一份「一日四餐计划」：
+- 每餐给出 2 个套餐选项（A/B），共 8 个套餐
+- 每餐标注建议用餐时间（如早餐 8:00-9:00、宵夜不晚于 21:30）
+- 每个套餐列出：主食、主菜、配菜/汤、**水果（必填一行）**
+- **每个套餐第一行必须以「🌍 风味背景：」开头**，用 1～2 句话介绍该套餐的菜系来源、国家/地区或文化背景（温馨口吻，不要写成长论文）
+- 标注每个套餐大约热量区间（2人总量及人均）
+- **表格格式严格为 5 列**：| 餐次 | 建议时间 | 套餐A | 套餐B | 热量 |
+  - 「建议时间」单独一列，不要写进套餐A/B列
+  - 套餐A/B列只写菜品内容，不要写「A.」「B.」前缀
+  - 每个套餐内容里必须有一行以「水果：」开头
+  - 每个套餐内容第一行必须是「🌍 风味背景：……」
+- 8 个选项之间也要尽量多样化，避免同一天内重复同类主菜
+- 若我要求**只生成某一餐**（如仅午餐），则只输出该餐 1 行表格，不要输出其他餐次
+- 结尾问我："请确认选 A 还是 B，或告诉我想调整的地方"
+此步骤不要输出做法和采购清单。
+
+## 第一步·单餐模式（当我明确说「只为某某餐」时）
+- 只输出该餐的 1 行表格（仍含建议时间、套餐A、套餐B、热量）
+- 其余规则与上面相同（水果、风味背景、3天不重样等）
+
+## 第二步：当我确认选择后
+依次输出：
+0. **风味与文化背景**：对所选的每个套餐/菜品，用 2～4 句介绍其国家或地区起源、菜系背景、为何适合锞锞的减脂与恢复需求
+1. 推荐理由：每餐 2-3 句，结合减脂、术后恢复、戒宵夜习惯说明
+2. 采购清单：扣除我已有食材，列出需购买食材及数量（2人份，用克/个/根等明确单位），按蔬菜、肉蛋、主食、水果、调料分类
+3. 详细做法：每道菜的完整步骤（含水果的处理/切配/何时食用），按"早→午→晚→宵夜"顺序，标注哪些可提前一天备菜
+   **每一步必须带「✅ Trigger（合格信号）」**，格式严格如下：
+   - **步骤 N：……**
+   - 操作：……（含火候、时长、调料克数）
+   - ✅ Trigger：……（必须是**看、闻、摸、听、测**能判断的明显信号，例如「边缘微焦金黄」「筷子能轻松插入」「液体呈鱼眼小泡、不再剧烈沸腾」「闻起来没有生腥味」；禁止写「适当」「差不多」等模糊词）
+4. 做饭流程时间表（与做法合并输出，不要另起第二次请求）：
+   - 总览（3～5 句）：整体策略、哪些前一天晚上做、哪些可并行
+   - 轻重缓急清单：🔴立刻/最早做、🟡中间穿插做、🟢临近开餐再做
+   - 精确时间表（表格）：从我提供的「当天开始准备时间」起，到宵夜完成，每 10～30 分钟一个节点
+     表格列：| 时间 | 优先级 | 做什么 | 对应餐次 | 预计耗时 | 备注/并行提示 |
+   - 开餐前检查清单：每餐开吃前 3 条检查项
+   若我选了「从容不赶时间」风格，节点间隔可放宽 15～40 分钟；高效并行则尽量重叠任务
+   **若第二步只针对单餐**（如仅午餐），时间表、采购清单、做法都只围绕这一餐，不要写其他餐次
+
+# 注意
+- 语气温和鼓励，不评判过去的饮食习惯
+- 减重节奏以每周约 0.5 公斤为目标，不输出过低热量的方案`;
+
+    const WIFE_PICK_ENCOURAGE = [
+      '选得好～老公会按这个做给你吃 ♥',
+      '这个搭配很健康，锞锞真棒！',
+      '好选择！咱们一步一步来',
+      '老公看到会很开心的 💕'
+    ];
+
+    const SHELF_DAYS = {
+      '叶菜': 3, '蔬菜': 4, '豆腐': 2, '鲜奶': 5, '酸奶': 10, '鸡蛋': 14, '鸡胸': 3, '瘦肉': 3,
+      '鱼': 2, '虾': 2, '水果': 5, '菌菇': 4, '根茎': 10, '土豆': 14, '杂粮': 60, '米': 90,
+      '冷冻': 30, '调料': 180, '默认': 7
+    };
+
+    const MEALS = [
+      { key: 'breakfast', label: '早餐', icon: '🌅' },
+      { key: 'lunch', label: '午餐', icon: '🍱' },
+      { key: 'dinner', label: '晚餐', icon: '🌇' },
+      { key: 'snack', label: '宵夜', icon: '🌙' }
+    ];
+
+    const WIFE_HINTS = {
+      breakfast: '早安锞锞～今天早餐想试试哪个？',
+      lunch: '锞锞，午餐选一个，吃饱了才有力气 ♥',
+      dinner: '晚餐老公帮你控热量，也要吃得开心哦',
+      snack: '宵夜选清淡的，咱们一步一步来 🌙'
+    };
+
+    const state = {
+      ingredients: '',
+      firstResponse: '',
+      parsedMeals: {},
+      selections: { breakfast: '', lunch: '', dinner: '', snack: '' },
+      viewingIndex: 0,
+      finalResponse: '',
+      scheduleResponse: '',
+      sharedByWife: false,
+      shareRole: 'husband',
+      generateMode: 'full',
+      singleMealKey: null,
+      messages: []
+    };
+
+    let pickedSingleMeal = 'breakfast';
+
+    function isSingleMealMode() {
+      return state.generateMode === 'single' && !!state.singleMealKey;
+    }
+
+    function getScopeMeals() {
+      if (isSingleMealMode()) {
+        const m = MEALS.find(x => x.key === state.singleMealKey);
+        return m ? [m] : [];
+      }
+      return MEALS;
+    }
+
+    function mealByKey(key) {
+      return MEALS.find(m => m.key === key);
+    }
+
+    const $ = (id) => document.getElementById(id);
+
+    function isWifeMode() {
+      return state.shareRole === 'wife' && !state.sharedByWife;
+    }
+
+    function applyRoleUI() {
+      const wife = isWifeMode();
+      document.querySelectorAll('.wife-only').forEach(el => el.classList.toggle('hidden', !wife));
+      document.querySelectorAll('.husband-only').forEach(el => el.classList.toggle('hidden', wife));
+      $('settingsCard').classList.toggle('hidden', wife);
+      $('pantryCard').classList.toggle('hidden', wife);
+      $('wifeWelcome').classList.toggle('hidden', !wife);
+      $('resetBtn').classList.toggle('hidden', wife);
+      $('brokenLinkCard').classList.add('hidden');
+      $('headerSubtitle').textContent = wife ? '老公亲手为你搭配的一日四餐' : '一日四餐 · 温馨减脂菜单';
+      const step2h2 = $('step2Card').querySelector('h2');
+      step2h2.innerHTML = wife
+        ? '<span class="step-badge">♥</span> 慢慢选，不着急'
+        : (isSingleMealMode()
+          ? `<span class="step-badge">2</span> 选${mealByKey(state.singleMealKey)?.label || '这一餐'}`
+          : '<span class="step-badge">2</span> 一顿一顿来选');
+    }
+
+    function showToast(msg) {
+      const old = document.querySelector('.toast');
+      if (old) old.remove();
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
+
+    function setStatus(el, text, type) {
+      el.textContent = text || '';
+      el.className = 'status' + (type ? ' ' + type : '');
+    }
+
+    function saveSettings(silent) {
+      localStorage.setItem('hm_apiBase', $('apiBase').value.trim());
+      localStorage.setItem('hm_apiModel', $('apiModel').value.trim());
+      localStorage.setItem('hm_apiKey', $('apiKey').value.trim());
+      updateApiReadyUI();
+      if (!silent) setStatus($('step1Status'), 'API 已自动保存 ♥', 'ok');
+    }
+
+    function loadSettings() {
+      $('apiBase').value = localStorage.getItem('hm_apiBase') || 'https://api.deepseek.com/v1';
+      $('apiModel').value = localStorage.getItem('hm_apiModel') || 'deepseek-v4-flash';
+      $('apiKey').value = localStorage.getItem('hm_apiKey') || '';
+      updateApiReadyUI();
+    }
+
+    function isApiConfigured() {
+      return !!($('apiBase').value.trim() && $('apiModel').value.trim() && $('apiKey').value.trim());
+    }
+
+    function updateApiReadyUI() {
+      const ready = isApiConfigured();
+      $('apiReadyHint').classList.toggle('hidden', !ready);
+      $('settingsToggle').textContent = ready ? '🎀 API 已配置（自动保存）' : '🎀 API 设置（首次请先配置）';
+      if (ready) $('settingsPanel').classList.remove('open');
+    }
+
+    function ensureApiForHusband() {
+      loadSettings();
+      if (!isApiConfigured()) {
+        $('settingsPanel').classList.add('open');
+        showToast('请先配置一次 API，以后会自动记住');
+        return false;
+      }
+      return true;
+    }
+
+    function getApiConfig() {
+      loadSettings();
+      const base = $('apiBase').value.trim().replace(/\/$/, '');
+      const key = $('apiKey').value.trim();
+      const model = $('apiModel').value.trim();
+      if (!base || !key || !model) {
+        throw new Error('请先配置 API（只需一次，会自动保存到本机 Safari/Chrome）');
+      }
+      return { base, key, model };
+    }
+
+    function guessShelfDays(name) {
+      const n = name || '';
+      if (/菠菜|生菜|油菜|菜心|空心菜|芥蓝|莴笋叶/.test(n)) return SHELF_DAYS['叶菜'];
+      if (/豆腐|豆花|内酯/.test(n)) return SHELF_DAYS['豆腐'];
+      if (/酸奶|优格/.test(n)) return SHELF_DAYS['酸奶'];
+      if (/牛奶|鲜奶/.test(n)) return SHELF_DAYS['鲜奶'];
+      if (/鸡蛋|蛋/.test(n)) return SHELF_DAYS['鸡蛋'];
+      if (/鸡胸|鸡肉|鸡腿/.test(n)) return SHELF_DAYS['鸡胸'];
+      if (/猪|牛|羊|瘦肉|排骨/.test(n)) return SHELF_DAYS['瘦肉'];
+      if (/鱼|带鱼|鲈鱼|鳕鱼/.test(n)) return SHELF_DAYS['鱼'];
+      if (/虾|蟹|贝/.test(n)) return SHELF_DAYS['虾'];
+      if (/苹果|橙|莓|葡萄|芒果|香蕉|水果|番茄|黄瓜/.test(n)) return SHELF_DAYS['水果'];
+      if (/菇|木耳|银耳/.test(n)) return SHELF_DAYS['菌菇'];
+      if (/土豆|萝卜|胡萝卜|山药|红薯|玉米|南瓜/.test(n)) return SHELF_DAYS['根茎'];
+      if (/米|糙米|燕麦|藜麦|杂粮|面/.test(n)) return SHELF_DAYS['杂粮'];
+      if (/冷冻|水饺|馄饨/.test(n)) return SHELF_DAYS['冷冻'];
+      if (/西兰花|菜花|芹菜|青椒|茄子|豆角|蔬菜/.test(n)) return SHELF_DAYS['蔬菜'];
+      return SHELF_DAYS['默认'];
+    }
+
+    function daysSince(dateStr) {
+      if (!dateStr) return null;
+      const d = new Date(dateStr + 'T12:00:00');
+      const now = new Date(($('cookDate').value || new Date().toISOString().slice(0, 10)) + 'T12:00:00');
+      return Math.floor((now - d) / 86400000);
+    }
+
+    function pantryFreshness(item) {
+      const days = daysSince(item.bought);
+      if (days === null) return '家中常备';
+      const shelf = guessShelfDays(item.name);
+      if (days > shelf) return `可能已用完/需补货（已买${days}天）`;
+      if (days >= Math.floor(shelf * 0.7)) return `快用完（已买${days}天）`;
+      return `充足（已买${days}天）`;
+    }
+
+    function getPantryItems() {
+      return [...document.querySelectorAll('.pantry-row')].map(row => ({
+        name: row.querySelector('.p-name').value.trim(),
+        qty: row.querySelector('.p-qty').value.trim(),
+        bought: row.querySelector('.p-bought').value
+      })).filter(i => i.name);
+    }
+
+    function savePantry() {
+      localStorage.setItem('hm_pantry', JSON.stringify(getPantryItems()));
+      localStorage.setItem('hm_city', $('userCity').value.trim());
+      localStorage.setItem('hm_cookDate', $('cookDate').value);
+    }
+
+    function loadPantry() {
+      $('userCity').value = localStorage.getItem('hm_city') || '广东省深圳市';
+      $('cookDate').value = localStorage.getItem('hm_cookDate') || new Date().toISOString().slice(0, 10);
+      const list = JSON.parse(localStorage.getItem('hm_pantry') || '[]');
+      $('pantryList').innerHTML = '';
+      if (!list.length) addPantryRow();
+      else list.forEach(addPantryRow);
+    }
+
+    function addPantryRow(data = {}) {
+      const row = document.createElement('div');
+      row.className = 'pantry-row';
+      const esc = (s) => String(s || '').replace(/"/g, '&quot;');
+      row.innerHTML = `
+        <input class="p-name" placeholder="食材名" value="${esc(data.name)}" />
+        <input class="p-qty" placeholder="数量" value="${esc(data.qty)}" />
+        <input class="p-bought" type="date" value="${data.bought || ''}" />
+        <button type="button" class="pantry-del" title="删除">×</button>
+      `;
+      row.querySelector('.pantry-del').onclick = () => {
+        row.remove();
+        if (!$('pantryList').children.length) addPantryRow();
+        savePantry();
+      };
+      row.querySelectorAll('input').forEach(inp => inp.addEventListener('change', savePantry));
+      $('pantryList').appendChild(row);
+    }
+
+    function buildPantryText() {
+      const items = getPantryItems();
+      if (!items.length) return '';
+      const city = $('userCity').value.trim() || '广东省深圳市';
+      const date = $('cookDate').value || new Date().toISOString().slice(0, 10);
+      const lines = items.map(i => {
+        const bought = i.bought ? `，${i.bought} 购买` : '';
+        const qty = i.qty ? ` ${i.qty}` : ' 有';
+        return `- ${i.name}${qty}${bought}（${pantryFreshness(i)}）`;
+      });
+      return `【地点】${city}\n【做饭日期】${date}\n【家中库存，未写数量也视为有货】\n${lines.join('\n')}`;
+    }
+
+    function buildIngredientsText() {
+      const parts = [];
+      const pantry = buildPantryText();
+      if (pantry) parts.push(pantry);
+      const prefs = ($('wifePrefs')?.value || '').trim();
+      if (prefs) parts.push('【锞锞口味偏好（健康前提下尽量满足，不健康则忽略）】\n' + prefs);
+      const recent = buildRecentMenusText(3);
+      if (recent) parts.push(recent);
+      const extra = ($('extraNotes')?.value || '').trim();
+      if (extra) parts.push('【补充说明】\n' + extra);
+      return parts.join('\n\n');
+    }
+
+    function snapshotMenuForHistory(parsedMeals) {
+      const meals = {};
+      MEALS.forEach(m => {
+        const d = parsedMeals[m.key];
+        if (!d) return;
+        meals[m.key] = {
+          A: formatOptionText(d.optionA).slice(0, 120),
+          B: formatOptionText(d.optionB).slice(0, 120)
+        };
+      });
+      return meals;
+    }
+
+    function loadMealHistory() {
+      try { return JSON.parse(localStorage.getItem('hm_mealHistory') || '[]'); }
+      catch { return []; }
+    }
+
+    function saveMealHistory(list) {
+      localStorage.setItem('hm_mealHistory', JSON.stringify(list.slice(0, 30)));
+    }
+
+    function recordMenuHistory(parsedMeals) {
+      if (!Object.keys(parsedMeals).length) return;
+      const date = $('cookDate').value || new Date().toISOString().slice(0, 10);
+      const snapshot = snapshotMenuForHistory(parsedMeals);
+      const history = loadMealHistory().filter(h => h.date !== date);
+      const prev = loadMealHistory().find(h => h.date === date);
+      const merged = { date, meals: { ...(prev?.meals || {}), ...snapshot } };
+      history.unshift(merged);
+      saveMealHistory(history);
+    }
+
+    function buildRecentMenusText(withinDays) {
+      const cookDate = $('cookDate').value || new Date().toISOString().slice(0, 10);
+      const cutoff = new Date(cookDate + 'T12:00:00');
+      cutoff.setDate(cutoff.getDate() - withinDays);
+      const history = loadMealHistory().filter(h => {
+        if (h.date === cookDate) return false;
+        const d = new Date(h.date + 'T12:00:00');
+        return d >= cutoff;
+      });
+      if (!history.length) return '';
+      const lines = history.map(entry => {
+        const rows = MEALS.map(m => {
+          const x = entry.meals?.[m.key];
+          if (!x) return null;
+          return `  ${m.label} 套餐A：${x.A}\n  ${m.label} 套餐B：${x.B}`;
+        }).filter(Boolean);
+        return `- ${entry.date}：\n${rows.join('\n')}`;
+      });
+      return `【近${withinDays}天已出现过的套餐（今日四餐共 8 个选项的主菜/主食/做法均不得重复）】\n${lines.join('\n\n')}`;
+    }
+
+    function saveWifePrefs() {
+      localStorage.setItem('hm_wifePrefs', $('wifePrefs').value.trim());
+    }
+
+    function loadWifePrefs() {
+      $('wifePrefs').value = localStorage.getItem('hm_wifePrefs') || '';
+    }
+
+    const EXCEL_TEMPLATE_ROWS = [
+      ['食材名称', '数量', '购买日期', '分类', '备注'],
+      ['鸡胸肉', '300g', '2026/6/10', '肉蛋', '冷藏'],
+      ['鸡蛋', '6个', '2026/6/8', '肉蛋', ''],
+      ['西兰花', '1颗', '2026/6/11', '蔬菜', ''],
+      ['糙米', '500g', '2026/5/20', '主食', '常备'],
+      ['豆腐', '1盒', '2026/6/9', '肉蛋', ''],
+      ['番茄', '3个', '2026/6/7', '蔬菜', ''],
+      ['无糖酸奶', '2盒', '2026/6/5', '奶制品', '宵夜用'],
+      ['苹果', '4个', '2026/5/1', '水果', '日期示例']
+    ];
+
+    const EXCEL_TEMPLATE_CSV = '\uFEFF' + EXCEL_TEMPLATE_ROWS.map(r => r.join(',')).join('\n') + '\n';
+
+    function downloadCsvTemplate() {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([EXCEL_TEMPLATE_CSV], { type: 'text/csv;charset=utf-8' }));
+      a.download = '库存导入模板.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    async function downloadExcelTemplate() {
+      try {
+        await loadXlsxLib();
+        const ws = XLSX.utils.aoa_to_sheet(EXCEL_TEMPLATE_ROWS);
+        for (let r = 1; r < EXCEL_TEMPLATE_ROWS.length; r++) {
+          const addr = XLSX.utils.encode_cell({ r, c: 2 });
+          if (ws[addr]) {
+            ws[addr].t = 's';
+            ws[addr].v = String(EXCEL_TEMPLATE_ROWS[r][2]);
+            ws[addr].z = '@';
+          }
+        }
+        ws['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 12 }, { wch: 8 }, { wch: 14 }];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '库存清单');
+        XLSX.writeFile(wb, '库存导入模板.xlsx');
+        showToast('已下载 .xlsx 模板，简体中文不会乱码');
+      } catch (err) {
+        downloadCsvTemplate();
+        showToast('已下载 CSV 备用；若乱码请在 Excel 用 UTF-8 导入');
+      }
+    }
+
+    function padDate(y, m, d) {
+      return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    function normalizeImportDate(val) {
+      if (val == null || val === '') return '';
+      if (val instanceof Date && !isNaN(val)) {
+        return padDate(val.getFullYear(), val.getMonth() + 1, val.getDate());
+      }
+      let s = String(val).trim();
+      if (!s) return '';
+      s = s.split(/\s+/)[0];
+
+      const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if (iso) return padDate(+iso[1], +iso[2], +iso[3]);
+
+      const slash = s.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+      if (slash) return padDate(+slash[1], +slash[2], +slash[3]);
+
+      const cn = s.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日?$/);
+      if (cn) return padDate(+cn[1], +cn[2], +cn[3]);
+
+      const n = Number(s);
+      if (!isNaN(n) && n > 30000 && n < 60000) {
+        const utc = Math.round((n - 25569) * 86400000);
+        const d = new Date(utc);
+        if (!isNaN(d)) return padDate(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+      }
+      return '';
+    }
+
+    function parseCsvLine(line) {
+      const out = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { inQ = !inQ; continue; }
+        if (c === ',' && !inQ) { out.push(cur.trim()); cur = ''; continue; }
+        cur += c;
+      }
+      out.push(cur.trim());
+      return out;
+    }
+
+    function parseCsvText(text) {
+      const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
+      if (!lines.length) return [];
+      const header = parseCsvLine(lines[0]).map(h => h.trim());
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cells = parseCsvLine(lines[i]);
+        if (!cells.some(c => c)) continue;
+        const row = {};
+        header.forEach((h, idx) => { row[h] = cells[idx] || ''; });
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function mapImportRow(row) {
+      const keys = Object.keys(row);
+      const find = (...names) => {
+        for (const n of names) {
+          const k = keys.find(key => key.replace(/\s/g, '') === n.replace(/\s/g, ''));
+          if (k && row[k] !== '' && row[k] != null) return row[k];
+        }
+        return '';
+      };
+      const findStr = (...names) => {
+        const v = find(...names);
+        return v === '' || v == null ? '' : String(v).trim();
+      };
+      const name = findStr('食材名称', '名称', '食材', 'name');
+      if (!name || /^示例|说明|填写/.test(name)) return null;
+      const rawDate = findStr('购买日期', '日期', '采购日期', 'bought');
+      const bought = normalizeImportDate(rawDate);
+      return {
+        name,
+        qty: findStr('数量', '份量', 'qty'),
+        bought,
+        rawDate,
+        category: find('分类', '类别', 'category'),
+        note: find('备注', '说明', 'note')
+      };
+    }
+
+    function rowsToPantryItems(rows) {
+      return rows.map(mapImportRow).filter(Boolean).map(r => ({
+        name: r.name,
+        qty: [r.qty, r.category && `(${r.category})`, r.note && `[${r.note}]`].filter(Boolean).join(' ').trim(),
+        bought: r.bought
+      }));
+    }
+
+    function importDateStats(rows) {
+      const mapped = rows.map(mapImportRow).filter(Boolean);
+      const badDate = mapped.filter(r => r.rawDate && !r.bought).length;
+      const noDate = mapped.filter(r => !r.rawDate).length;
+      return { mapped, badDate, noDate };
+    }
+
+    function setPantryItems(items) {
+      $('pantryList').innerHTML = '';
+      if (!items.length) addPantryRow();
+      else items.forEach(item => addPantryRow(item));
+      savePantry();
+    }
+
+    async function loadXlsxLib() {
+      if (window.XLSX) return;
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('无法加载 Excel 解析库，请改用 CSV 格式或检查网络'));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function parseExcelFile(file) {
+      const name = file.name.toLowerCase();
+      if (name.endsWith('.csv')) {
+        const text = await file.text();
+        return rowsToPantryItems(parseCsvText(text));
+      }
+      await loadXlsxLib();
+      const data = await file.arrayBuffer();
+      const wb = XLSX.read(data, { type: 'array', cellDates: true });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, dateNF: 'yyyy/m/d' });
+      return rowsToPantryItems(rows);
+    }
+
+    async function importExcelFile(file) {
+      if (!file) return;
+      setStatus($('stockStatus'), '正在导入…');
+      try {
+        const name = file.name.toLowerCase();
+        let rows;
+        if (name.endsWith('.csv')) {
+          rows = parseCsvText(await file.text());
+        } else {
+          await loadXlsxLib();
+          const data = await file.arrayBuffer();
+          const wb = XLSX.read(data, { type: 'array', cellDates: true });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false, dateNF: 'yyyy/m/d' });
+        }
+        const { mapped, badDate, noDate } = importDateStats(rows);
+        const items = mapped.map(r => ({
+          name: r.name,
+          qty: [r.qty, r.category && `(${r.category})`, r.note && `[${r.note}]`].filter(Boolean).join(' ').trim(),
+          bought: r.bought
+        }));
+        if (!items.length) throw new Error('没有读到有效食材，请检查表头和「食材名称」列');
+        setPantryItems(items);
+        let msg = `已导入 ${items.length} 项食材`;
+        if (badDate) msg += `，${badDate} 项日期格式未识别`;
+        if (noDate) msg += `，${noDate} 项未填购买日期`;
+        setStatus($('stockStatus'), msg, badDate || noDate ? '' : 'ok');
+        showToast(msg);
+      } catch (err) {
+        setStatus($('stockStatus'), err.message, 'error');
+        showToast(err.message);
+      } finally {
+        $('excelFileInput').value = '';
+      }
+    }
+
+    async function callApi(messages) {
+      const { base, key, model } = getApiConfig();
+      const url = base.endsWith('/v1') ? base + '/chat/completions' : base + '/v1/chat/completions';
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify({ model, messages, temperature: 0.7 })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error?.message || data.message || ('请求失败 HTTP ' + res.status));
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new Error('API 返回为空，请检查设置');
+      return content;
+    }
+
+    function looksLikeTime(str) {
+      if (!str) return false;
+      const s = String(str).trim();
+      return /^\d{1,2}:\d{2}\s*[-~－至到]\s*\d{1,2}:\d{2}/.test(s) ||
+        /^不晚于\s*\d{1,2}:\d{2}/.test(s);
+    }
+
+    function extractMealTime(firstCell) {
+      const range = firstCell.match(/(\d{1,2}:\d{2}\s*[-~－至到]\s*\d{1,2}:\d{2})/);
+      if (range) return range[1].replace(/\s+/g, ' ').trim();
+      const late = firstCell.match(/不晚于\s*\d{1,2}:\d{2}/);
+      return late ? late[0] : '';
+    }
+
+    function cleanOptionText(text, letter) {
+      if (!text) return '';
+      let t = String(text).replace(/<br\s*\/?>/gi, '\n').replace(/\*\*/g, '').trim();
+      if (looksLikeTime(t)) return '';
+      t = t.replace(new RegExp(`^[\\s]*${letter}[\\.．、)\\]]\\s*`, 'i'), '');
+      t = t.replace(/^[\s]*套餐\s*[ABab][\.．、)\]]?\s*/, '');
+      t = t.replace(/^\d{1,2}:\d{2}\s*[-~－至到]\s*\d{1,2}:\d{2}\s*\n?/m, '').trim();
+      return t;
+    }
+
+    function parseMealsFromResponse(text) {
+      const result = {};
+      for (const line of text.split('\n')) {
+        if (!line.includes('|')) continue;
+        const cells = line.split('|').map(c => c.trim()).filter(c => c && !/^[-:]+$/.test(c));
+        if (cells.length < 3) continue;
+
+        const first = cells[0];
+        if (/^餐次|用餐时间|套餐|热量/i.test(first)) continue;
+
+        let key = null;
+        if (/早餐/.test(first)) key = 'breakfast';
+        else if (/午餐/.test(first)) key = 'lunch';
+        else if (/晚餐/.test(first)) key = 'dinner';
+        else if (/宵夜|夜宵/.test(first)) key = 'snack';
+        if (!key || result[key]) continue;
+
+        let time = extractMealTime(first);
+        let colStart = 1;
+
+        if (cells.length >= 4 && (looksLikeTime(cells[1]) || /^建议时间|用餐时间$/i.test(cells[1]))) {
+          if (!time && looksLikeTime(cells[1])) time = cells[1].replace(/\s+/g, ' ').trim();
+          colStart = 2;
+        }
+        if (/^套餐\s*[ABab]?$/i.test(cells[colStart]) && cells.length > colStart + 2) colStart++;
+
+        let optionA = cleanOptionText(cells[colStart] || '', 'A');
+        let optionB = cleanOptionText(cells[colStart + 1] || '', 'B');
+        let calories = cells[colStart + 2] || '';
+
+        if (!optionA && looksLikeTime(cells[colStart]) && cells[colStart + 1]) {
+          if (!time) time = cells[colStart].replace(/\s+/g, ' ').trim();
+          optionA = cleanOptionText(cells[colStart + 1] || '', 'A');
+          optionB = cleanOptionText(cells[colStart + 2] || '', 'B');
+          calories = cells[colStart + 3] || '';
+        }
+
+        if (!optionA && !optionB) continue;
+
+        result[key] = { time, optionA, optionB, calories };
+      }
+      return fixParsedMeals(result);
+    }
+
+    function fixParsedMeals(meals) {
+      const out = {};
+      for (const [key, d] of Object.entries(meals || {})) {
+        if (!d) continue;
+        let { time, optionA, optionB, calories } = d;
+        if (looksLikeTime(optionA) && optionB && !looksLikeTime(String(optionB).split('\n')[0])) {
+          if (!time) time = String(optionA).trim();
+          optionA = optionB;
+          optionB = calories || '';
+          calories = '';
+        }
+        out[key] = {
+          time: (time || '').replace(/\s+/g, ' ').trim(),
+          optionA: cleanOptionText(optionA, 'A'),
+          optionB: cleanOptionText(optionB, 'B'),
+          originA: extractOrigin(optionA),
+          originB: extractOrigin(optionB),
+          calories: calories || ''
+        };
+      }
+      return out;
+    }
+
+    function extractOrigin(text) {
+      const raw = String(text || '').replace(/<br\s*\/?>/gi, '\n');
+      for (const line of raw.split('\n')) {
+        const t = line.trim();
+        if (/^(🌍|风味背景|文化背景)/.test(t)) {
+          return t.replace(/^(🌍\s*)?(风味背景|文化背景)[：:]\s*/, '').trim();
+        }
+      }
+      return '';
+    }
+
+    function optionBodyWithoutOrigin(text) {
+      return formatOptionText(text).split('\n')
+        .filter(l => !/^(🌍|风味背景|文化背景)/.test(l.trim()))
+        .join('\n')
+        .trim();
+    }
+
+    function getCurrentIndex() {
+      const scope = getScopeMeals();
+      for (let i = 0; i < scope.length; i++) {
+        const s = state.selections[scope[i].key];
+        if (s !== 'A' && s !== 'B') {
+          return MEALS.findIndex(m => m.key === scope[i].key);
+        }
+      }
+      return MEALS.length;
+    }
+
+    function allSelected() {
+      const scope = getScopeMeals().filter(m => state.parsedMeals[m.key]);
+      if (!scope.length) return false;
+      return scope.every(m => state.selections[m.key] === 'A' || state.selections[m.key] === 'B');
+    }
+
+    function selectionsText() {
+      const scope = getScopeMeals().filter(m => state.selections[m.key]);
+      return scope.map(m => `${m.label}${state.selections[m.key] || '未选'}`).join('、');
+    }
+
+    function formatOptionText(text) {
+      if (!text) return '';
+      let t = String(text).replace(/<br\s*\/?>/gi, '\n').replace(/\*\*/g, '').trim();
+      if (looksLikeTime(t)) return '';
+      t = t.replace(/^[\s]*[ABab][\.．、)\]]\s*/, '');
+      t = t.replace(/^[\s]*套餐\s*[ABab][\.．、)\]]?\s*/, '');
+      t = t.replace(/^\d{1,2}:\d{2}\s*[-~－至到]\s*\d{1,2}:\d{2}\s*\n?/m, '').trim();
+      return t;
+    }
+
+    function optionHeadline(text) {
+      const line = formatOptionText(text).split('\n').find(l => l.trim()) || '';
+      return line.length > 36 ? line.slice(0, 36) + '…' : line;
+    }
+
+    function renderProgressBar() {
+      const bar = $('progressBar');
+      if (isSingleMealMode()) {
+        const m = mealByKey(state.singleMealKey);
+        if (!m) { bar.innerHTML = ''; return; }
+        const sel = state.selections[m.key];
+        bar.innerHTML = `<div class="single-meal-badge">${m.icon} 单餐模式：${m.label}${sel ? ' · 已选套餐 ' + sel : ' · 请选 A 或 B'}</div>`;
+        return;
+      }
+      const activeIdx = allSelected() ? MEALS.length : getCurrentIndex();
+      bar.innerHTML = MEALS.map((m, i) => {
+        const sel = state.selections[m.key];
+        let cls = 'progress-dot';
+        if (sel === 'A' || sel === 'B') cls += ' done';
+        if (i === activeIdx && !allSelected()) cls += ' active';
+        if (!isWifeMode()) cls += ' clickable';
+        return `<div class="${cls}" data-meal-idx="${i}" role="button" tabindex="0">
+          <span class="icon">${sel ? sel : m.icon}</span>
+          <span class="label">${m.label}</span>
+        </div>`;
+      }).join('');
+      if (!isWifeMode()) {
+        bar.querySelectorAll('.progress-dot.clickable').forEach(dot => {
+          dot.addEventListener('click', () => jumpToMeal(Number(dot.dataset.mealIdx)));
+        });
+      }
+    }
+
+    function jumpToMeal(idx) {
+      if (isWifeMode() || idx < 0 || idx >= MEALS.length) return;
+      for (let i = idx; i < MEALS.length; i++) {
+        state.selections[MEALS[i].key] = '';
+      }
+      state.viewingIndex = idx;
+      state.sharedByWife = false;
+      renderMealStep();
+      $('mealStepArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function restartSelection() {
+      if (isSingleMealMode()) {
+        state.selections[state.singleMealKey] = '';
+      } else {
+        state.selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
+      }
+      state.sharedByWife = false;
+      state.viewingIndex = 0;
+      renderMealStep();
+      setStatus($('step2Status'), '', '');
+      showToast(isSingleMealMode() ? '重新选这一餐吧～' : '从早餐开始自己选吧～');
+    }
+
+    function renderOptionCard(mealKey, letter, data) {
+      const field = letter === 'A' ? 'optionA' : 'optionB';
+      const originField = letter === 'A' ? 'originA' : 'originB';
+      const origin = data[originField] || extractOrigin(data[field]);
+      const body = optionBodyWithoutOrigin(data[field]);
+      const cal = letter === 'A' && data.calories ? `<div class="opt-cal">🔥 ${data.calories}</div>` : '';
+      return `
+        <button type="button" class="option-card ${state.selections[mealKey] === letter ? 'selected' : ''}" data-choice="${letter}">
+          <div class="opt-tag"><span class="badge">${letter}</span> ${optionHeadline(body) || '套餐 ' + letter}</div>
+          ${origin ? `<div class="opt-origin">🌍 ${origin}</div>` : ''}
+          <div class="opt-content">${body.replace(/\n/g, '<br>')}</div>
+          ${cal}
+        </button>`;
+    }
+
+    function renderMealStep() {
+      renderProgressBar();
+
+      const idx = allSelected() ? MEALS.length - 1 : getCurrentIndex();
+      state.viewingIndex = idx;
+
+      const mealArea = $('mealStepArea');
+      const allDone = $('allDoneArea');
+      const confirmBtn = $('confirmBtn');
+      const finalPickBtns = $('finalPickBtns');
+      const prevBtn = $('prevMealBtn');
+      const restartBtn = $('restartPickBtn');
+
+      if (allSelected()) {
+        mealArea.classList.add('hidden');
+        allDone.classList.remove('hidden');
+        finalPickBtns.classList.toggle('hidden', !isWifeMode());
+        prevBtn.classList.remove('hidden');
+        restartBtn.classList.toggle('hidden', isWifeMode());
+        if (isWifeMode()) {
+          confirmBtn.classList.add('hidden');
+          $('allDoneTitle').textContent = '锞锞，都选好啦！';
+          $('allDoneDesc').textContent = '点下方「告诉老公我选好了」，他就能看到你的选择～';
+        } else {
+          confirmBtn.classList.remove('hidden');
+          const m = isSingleMealMode() ? mealByKey(state.singleMealKey) : null;
+          $('allDoneTitle').textContent = state.sharedByWife
+            ? (m ? `锞锞的${m.label}选择已同步` : '锞锞的选择已同步')
+            : (m ? `${m.label}选好啦！` : '四餐都选好啦！');
+          $('allDoneDesc').textContent = state.sharedByWife
+            ? '确认无误就生成方案；想自己改点「重新选四餐」'
+            : (m ? '确认后生成这一餐的做法、采购清单和做饭时间表' : '确认后一次生成做法、采购清单和做饭时间表');
+          $('cookPrefBox').style.display = 'grid';
+          $('confirmBtn').textContent = m ? '生成这一餐方案+时间表 →' : '生成方案+做饭时间表 →';
+        }
+        return;
+      }
+
+      $('confirmBtn').textContent = isSingleMealMode() ? '生成这一餐方案+时间表 →' : '生成方案+做饭时间表 →';
+
+      mealArea.classList.remove('hidden');
+      allDone.classList.add('hidden');
+      confirmBtn.classList.add('hidden');
+      finalPickBtns.classList.add('hidden');
+      restartBtn.classList.add('hidden');
+      if (!isWifeMode()) $('cookPrefBox').style.display = 'none';
+
+      const meal = MEALS[idx];
+      const data = state.parsedMeals[meal.key];
+
+      prevBtn.classList.toggle('hidden', idx === 0 && !isSingleMealMode());
+
+      const scope = getScopeMeals();
+      const posInScope = scope.findIndex(m => m.key === meal.key);
+      const hint = isWifeMode() ? WIFE_HINTS[meal.key] : (
+        isSingleMealMode() ? `选 ${meal.label} 的 A 或 B` : `选一个喜欢的吧～（${posInScope + 1} / ${scope.length}）`
+      );
+      const loveHint = isWifeMode() ? `<div class="love-hint">${hint}</div>` : '';
+
+      if (!data) {
+        mealArea.innerHTML = `
+          ${loveHint}
+          <div class="meal-step">
+            <p class="meal-title">${meal.icon} ${meal.label}</p>
+            <p class="step-hint">${isWifeMode() ? '点一个你喜欢的' : '未能解析菜单，请直接点选'}</p>
+          </div>
+          <div class="option-cards">
+            ${['A', 'B'].map(c => `
+              <button type="button" class="option-card ${state.selections[meal.key] === c ? 'selected' : ''}"
+                data-choice="${c}">
+                <div class="opt-tag"><span class="badge">${c}</span> 套餐 ${c}</div>
+              </button>
+            `).join('')}
+          </div>`;
+      } else {
+        mealArea.innerHTML = `
+          ${loveHint}
+          <div class="meal-step fade-in">
+            <p class="meal-title">${meal.icon} ${meal.label}</p>
+            ${data.time ? `<p class="meal-time">建议时间 ${data.time}</p>` : ''}
+            ${!isWifeMode() ? `<p class="step-hint">${hint}</p>` : ''}
+          </div>
+          <div class="option-cards fade-in">
+            ${renderOptionCard(meal.key, 'A', data)}
+            ${renderOptionCard(meal.key, 'B', data)}
+          </div>`;
+      }
+
+      mealArea.querySelectorAll('.option-card').forEach(btn => {
+        btn.addEventListener('click', () => selectMeal(meal.key, btn.dataset.choice));
+      });
+    }
+
+    function selectMeal(key, choice) {
+      state.selections[key] = choice;
+      state.sharedByWife = false;
+      syncUrl();
+
+      const idx = MEALS.findIndex(m => m.key === key);
+      if (!isSingleMealMode() && idx < MEALS.length - 1 && getCurrentIndex() > idx) {
+        state.viewingIndex = idx + 1;
+      }
+
+      if (isWifeMode()) {
+        const msg = WIFE_PICK_ENCOURAGE[idx % WIFE_PICK_ENCOURAGE.length];
+        showToast(msg);
+      }
+
+      renderMealStep();
+      $('mealStepArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function goPrevMeal() {
+      if (allSelected()) {
+        if (isSingleMealMode()) {
+          state.selections[state.singleMealKey] = '';
+          renderMealStep();
+          return;
+        }
+        state.viewingIndex = MEALS.length - 1;
+        const last = MEALS[MEALS.length - 1].key;
+        state.selections[last] = '';
+        renderMealStep();
+        return;
+      }
+      const idx = getCurrentIndex();
+      if (idx > 0) {
+        const prevKey = MEALS[idx - 1].key;
+        state.selections[prevKey] = '';
+        renderMealStep();
+      }
+    }
+
+    function simpleMarkdown(md) {
+      let html = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      const lines = html.split('\n');
+      let out = [], tableRows = [], inTable = false;
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let t = '<table>';
+        tableRows.forEach((row, i) => {
+          const cells = row.split('|').map(c => c.trim()).filter(Boolean);
+          if (!cells.length || cells.every(c => /^[-:]+$/.test(c))) return;
+          if (i === 0) t += '<thead><tr>' + cells.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>';
+          else t += '<tr>' + cells.map(c => '<td>' + c + '</td>').join('') + '</tr>';
+        });
+        t += '</tbody></table>';
+        out.push(t);
+        tableRows = [];
+        inTable = false;
+      }
+
+      for (const line of lines) {
+        if (line.includes('|') && line.trim().startsWith('|')) {
+          inTable = true;
+          tableRows.push(line);
+        } else {
+          if (inTable) flushTable();
+          if (/^[-*] /.test(line.trim())) out.push('<li>' + line.trim().slice(2) + '</li>');
+          else if (line.trim()) out.push('<p>' + line + '</p>');
+        }
+      }
+      if (inTable) flushTable();
+      html = out.join('\n').replace(/((?:<li>[\s\S]*?<\/li>\n?)+)/g, m => '<ul>' + m + '</ul>');
+      return html;
+    }
+
+    function expandLitePayload(data) {
+      if (!data?.lite) return data;
+      const selStr = data.s || '';
+      const selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
+      MEALS.forEach((m, i) => { if (selStr[i]) selections[m.key] = selStr[i]; });
+      return {
+        ...data,
+        ingredients: data.i || data.ingredients || '',
+        parsedMeals: data.m || data.parsedMeals || {},
+        selections: data.selections || selections,
+        sharedByWife: !!(data.w ?? data.sharedByWife),
+        shareRole: (data.r === 'w' || data.shareRole === 'wife') ? 'wife' : 'husband',
+        generateMode: data.gm === 's' || data.generateMode === 'single' ? 'single' : 'full',
+        singleMealKey: (data.sk != null && MEALS[data.sk]) ? MEALS[data.sk].key : (data.singleMealKey || null)
+      };
+    }
+
+    function buildPayload(extra, lite) {
+      if (lite) {
+        const sel = MEALS.map(m => state.selections[m.key] || '').join('');
+        const role = (extra.shareRole ?? state.shareRole) === 'wife' ? 'w' : 'h';
+        return {
+          v: 4,
+          lite: true,
+          i: state.ingredients,
+          m: state.parsedMeals,
+          s: sel,
+          w: (extra.sharedByWife ?? state.sharedByWife) ? 1 : 0,
+          r: role,
+          gm: isSingleMealMode() ? 's' : 'f',
+          sk: isSingleMealMode() ? MEALS.findIndex(m => m.key === state.singleMealKey) : undefined
+        };
+      }
+      return {
+        v: 4,
+        ingredients: state.ingredients,
+        firstResponse: state.firstResponse,
+        parsedMeals: state.parsedMeals,
+        selections: state.selections,
+        sharedByWife: state.sharedByWife,
+        shareRole: state.shareRole,
+        generateMode: state.generateMode,
+        singleMealKey: state.singleMealKey,
+        ...extra
+      };
+    }
+
+    function getBaseUrl() {
+      return location.origin + location.pathname;
+    }
+
+    function getShareBaseUrl() {
+      const custom = (localStorage.getItem('hm_publicBaseUrl') || '').trim().replace(/\/$/, '');
+      return custom || getBaseUrl();
+    }
+
+    function isPrivateHostname(host) {
+      if (!host || host === 'localhost' || host === '127.0.0.1') return true;
+      if (/^192\.168\./.test(host)) return true;
+      if (/^10\./.test(host)) return true;
+      if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true;
+      return false;
+    }
+
+    function isTemporaryTunnelUrl(url) {
+      try { return /trycloudflare\.com/i.test(new URL(url).hostname); }
+      catch { return /trycloudflare\.com/i.test(url || ''); }
+    }
+
+    function needsPublicShareUrl() {
+      return isPrivateHostname(location.hostname) && !(localStorage.getItem('hm_publicBaseUrl') || '').trim();
+    }
+
+    function savePublicBaseUrl() {
+      const v = $('publicBaseUrl').value.trim().replace(/\/$/, '');
+      localStorage.setItem('hm_publicBaseUrl', v);
+      updateShareRemoteHint();
+    }
+
+    function loadPublicBaseUrl() {
+      $('publicBaseUrl').value = localStorage.getItem('hm_publicBaseUrl') || '';
+      updateShareRemoteHint();
+    }
+
+    function updateShareRemoteHint() {
+      const el = $('shareRemoteHint');
+      if (!el) return;
+      const base = getShareBaseUrl();
+      if (needsPublicShareUrl()) {
+        el.classList.remove('hidden');
+        el.innerHTML = '⚠️ 还没设置外网地址，链接是家里 WiFi，锞锞<strong>打不开</strong>。<br>请双击 <strong>deploy-github.command</strong>（推荐，永久有效）。';
+      } else if (isTemporaryTunnelUrl(base)) {
+        el.classList.remove('hidden');
+        el.innerHTML = '⚠️ 当前是<strong>临时隧道</strong>（trycloudflare.com）。<br>黑色终端必须一直开着，否则锞锞会看到 <strong>Error 1033</strong>。<br>建议改用 <strong>deploy-github.command</strong> 永久部署。';
+      } else {
+        el.classList.add('hidden');
+      }
+      const hint = $('publicBaseHint');
+      if (hint) {
+        const base = getShareBaseUrl();
+        try {
+          if (base.startsWith('http') && !isPrivateHostname(new URL(base).hostname)) {
+            hint.textContent = `当前分享根地址：${base}`;
+            return;
+          }
+        } catch { /* ignore invalid url */ }
+        hint.textContent = '发给锞锞的链接会用这个地址，而不是 192.168 家里 WiFi 地址';
+      }
+    }
+
+    function applySetupFromQuery() {
+      const params = new URLSearchParams(location.search);
+      const url = params.get('setupPublicUrl');
+      if (!url) return;
+      try {
+        const decoded = decodeURIComponent(url).trim().replace(/\/$/, '');
+        localStorage.setItem('hm_publicBaseUrl', decoded);
+        $('publicBaseUrl').value = decoded;
+        params.delete('setupPublicUrl');
+        const rest = params.toString();
+        history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+        showToast('外网分享地址已设置 ♥ 现在发给锞锞的链接她在外面也能开');
+        updateShareRemoteHint();
+      } catch { /* ignore */ }
+    }
+
+    function toUrlSafe(b64) {
+      return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    function fromUrlSafe(safe) {
+      let s = safe.replace(/-/g, '+').replace(/_/g, '/');
+      while (s.length % 4) s += '=';
+      return s;
+    }
+
+    function encodeState(extra, lite) {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(buildPayload(extra, lite)))));
+    }
+
+    function decodeState(encoded) {
+      if (!encoded) return null;
+      try {
+        const raw = encoded.replace(/^#/, '');
+        return expandLitePayload(JSON.parse(decodeURIComponent(escape(atob(fromUrlSafe(raw))))));
+      } catch { return null; }
+    }
+
+    function parseSharedFromInput(input) {
+      if (!input) return null;
+      const str = input.trim();
+      try {
+        const url = new URL(str, getBaseUrl());
+        const d = url.searchParams.get('d');
+        if (d) return decodeState(d);
+        if (url.hash) return decodeState(url.hash.slice(1));
+      } catch { /* not a full url */ }
+      const qm = str.match(/[?&]d=([^&]+)/);
+      if (qm) return decodeState(decodeURIComponent(qm[1]));
+      if (str.includes('#')) return decodeState(str.split('#').pop());
+      return decodeState(str);
+    }
+
+    function parseSharedFromPage() {
+      const params = new URLSearchParams(location.search);
+      const d = params.get('d');
+      if (d) return decodeState(d);
+      if (location.hash.length > 1) return decodeState(location.hash.slice(1));
+      return null;
+    }
+
+    function rebuildFirstResponseFromParsed() {
+      const rows = MEALS.map(m => {
+        const d = state.parsedMeals[m.key];
+        if (!d) return null;
+        const time = d.time ? `${m.label} | ${d.time}` : m.label;
+        return `| ${time} | ${d.optionA.replace(/\n/g, '<br>')} | ${d.optionB.replace(/\n/g, '<br>')} | ${d.calories || ''} |`;
+      }).filter(Boolean);
+      return [
+        '## 一日四餐计划（2人份）',
+        '',
+        '| 餐次/时间 | 套餐A | 套餐B | 热量预估 |',
+        '|---|---|---|---|',
+        ...rows,
+        '',
+        '请确认每餐选 A 还是 B。'
+      ].join('\n');
+    }
+
+    function rebuildMessages() {
+      if (!state.ingredients) return;
+      const first = state.firstResponse || rebuildFirstResponseFromParsed();
+      state.firstResponse = first;
+      const userMsg = '现有食材如下，请按工作流程第一步输出一日四餐计划：\n\n' + state.ingredients;
+      state.messages = [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: userMsg },
+        { role: 'assistant', content: first }
+      ];
+    }
+
+    function syncUrl() {
+      const hasMenu = state.firstResponse || Object.keys(state.parsedMeals).length > 0;
+      if (!hasMenu) return;
+      const encoded = toUrlSafe(encodeState({}, isWifeMode() || state.shareRole === 'wife'));
+      if (isWifeMode() || state.sharedByWife) {
+        history.replaceState(null, '', getBaseUrl() + '?d=' + encoded);
+      } else {
+        history.replaceState(null, '', getBaseUrl() + '#' + encoded);
+      }
+    }
+
+    function applySharedState(data) {
+      const hasMeals = data?.parsedMeals && Object.keys(data.parsedMeals).length > 0;
+      if (!data || (!data.firstResponse && !data.lite && !hasMeals)) return false;
+      state.ingredients = data.ingredients || '';
+      state.parsedMeals = data.parsedMeals || {};
+      state.firstResponse = data.firstResponse || '';
+      if (state.firstResponse) {
+        state.parsedMeals = parseMealsFromResponse(state.firstResponse);
+      } else if (Object.keys(state.parsedMeals).length) {
+        state.parsedMeals = fixParsedMeals(state.parsedMeals);
+      }
+      state.selections = Object.assign({ breakfast: '', lunch: '', dinner: '', snack: '' }, data.selections || {});
+      state.sharedByWife = !!data.sharedByWife;
+      state.shareRole = data.sharedByWife ? 'husband' : (data.shareRole || 'husband');
+      state.generateMode = data.generateMode === 'single' ? 'single' : 'full';
+      state.singleMealKey = data.singleMealKey || null;
+      if (data.lite || !state.messages.length) rebuildMessages();
+      applyRoleUI();
+      return true;
+    }
+
+    function getShareUrl(opts = {}) {
+      const forWife = opts.forWife ?? false;
+      const wifeDone = opts.wifeDone ?? false;
+      const lite = opts.lite ?? (forWife || wifeDone);
+      const encoded = toUrlSafe(encodeState({
+        shareRole: wifeDone ? 'husband' : (forWife ? 'wife' : state.shareRole),
+        sharedByWife: wifeDone || state.sharedByWife
+      }, lite));
+      return getShareBaseUrl() + '?d=' + encoded;
+    }
+
+    function openShareModal() {
+      updateShareRemoteHint();
+      if (needsPublicShareUrl()) {
+        $('settingsPanel').classList.add('open');
+        showToast('请先设置外网分享地址，锞锞不同 WiFi 才能打开');
+      }
+      $('shareLinkInput').value = getShareUrl({ forWife: true, lite: true });
+      $('shareModal').classList.remove('hidden');
+    }
+
+    function buildWifeShortMsg() {
+      const scope = getScopeMeals().filter(m => state.selections[m.key]);
+      const parts = scope.map(m => `${m.label}${state.selections[m.key]}`);
+      return `老公我选好啦♥ ${parts.join(' ')} 辛苦你啦～`;
+    }
+
+    function parseWifeShortSelections(text) {
+      if (!text || text.includes('d=') || /^https?:\/\//i.test(text.trim())) return null;
+      const selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
+      let count = 0;
+      MEALS.forEach(m => {
+        const hit = text.match(new RegExp(m.label + '\\s*([AB])', 'i'));
+        if (hit) { selections[m.key] = hit[1].toUpperCase(); count++; }
+      });
+      return count >= 4 ? selections : (count >= 1 && Object.keys(state.parsedMeals).length === 1 ? selections : null);
+    }
+
+    function openWifeSendModal() {
+      const url = getShareUrl({ wifeDone: true });
+      $('wifeSendLinkInput').value = url;
+      $('wifeShortMsg').textContent = buildWifeShortMsg();
+      $('wifeSendSummary').innerHTML = getScopeMeals().map(m =>
+        `<div class="item"><span>${m.icon} ${m.label}</span><span>套餐 ${state.selections[m.key]}</span></div>`
+      ).join('');
+      $('wifeSendModal').classList.remove('hidden');
+    }
+
+    async function copyText(text) {
+      try { await navigator.clipboard.writeText(text); return true; }
+      catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      }
+    }
+
+    async function generateMenu() {
+      if (!ensureApiForHusband()) return;
+      savePantry();
+      const ingredients = buildIngredientsText();
+      if (!ingredients) {
+        setStatus($('step1Status'), '请先导入或填写库存清单', 'error');
+        return;
+      }
+
+      state.ingredients = ingredients;
+      state.firstResponse = '';
+      state.parsedMeals = {};
+      state.finalResponse = '';
+      state.selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
+      state.sharedByWife = false;
+      state.shareRole = 'husband';
+      state.generateMode = 'full';
+      state.singleMealKey = null;
+
+      $('generateBtn').disabled = true;
+      $('generateSingleBtn').disabled = true;
+      setStatus($('step1Status'), 'Kitty 正在为你搭配菜单…');
+
+      try {
+        const userMsg = '现有食材如下，请按工作流程第一步输出一日四餐计划：\n\n' + ingredients;
+        state.messages = [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userMsg }
+        ];
+        const reply = await callApi(state.messages);
+        state.firstResponse = reply;
+        state.parsedMeals = parseMealsFromResponse(reply);
+        state.messages.push({ role: 'assistant', content: reply });
+        recordMenuHistory(state.parsedMeals);
+
+        $('step2Card').classList.remove('hidden');
+        $('step3Card').classList.add('hidden');
+        $('resetBtn').classList.remove('hidden');
+        applyRoleUI();
+        renderMealStep();
+        syncUrl();
+        setStatus($('step1Status'), '菜单好啦，从早餐开始选吧 ♥', 'ok');
+      } catch (err) {
+        setStatus($('step1Status'), err.message, 'error');
+      } finally {
+        $('generateBtn').disabled = false;
+        $('generateSingleBtn').disabled = false;
+      }
+    }
+
+    async function generateSingleMeal(mealKey) {
+      const meal = mealByKey(mealKey);
+      if (!meal) return;
+      if (!ensureApiForHusband()) return;
+      savePantry();
+      const ingredients = buildIngredientsText();
+      if (!ingredients) {
+        setStatus($('step1Status'), '请先导入或填写库存清单', 'error');
+        return;
+      }
+
+      state.ingredients = ingredients;
+      state.firstResponse = '';
+      state.parsedMeals = {};
+      state.finalResponse = '';
+      state.selections = { breakfast: '', lunch: '', dinner: '', snack: '' };
+      state.sharedByWife = false;
+      state.shareRole = 'husband';
+      state.generateMode = 'single';
+      state.singleMealKey = mealKey;
+
+      $('generateBtn').disabled = true;
+      $('generateSingleBtn').disabled = true;
+      setStatus($('step1Status'), `正在搭配${meal.label}…`);
+
+      try {
+        const userMsg = [
+          `请只为【${meal.label}】这一餐输出计划（不要输出早餐/午餐/晚餐/宵夜中的其他餐次）。`,
+          '仍提供 A/B 两个套餐，遵守全部饮食原则（水果、🌍风味背景、3天不重样等）。',
+          '表格只需 1 行。',
+          '',
+          ingredients
+        ].join('\n');
+        state.messages = [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userMsg }
+        ];
+        const reply = await callApi(state.messages);
+        state.firstResponse = reply;
+        state.parsedMeals = parseMealsFromResponse(reply);
+        if (!state.parsedMeals[mealKey]) {
+          const only = Object.values(state.parsedMeals)[0];
+          if (only) state.parsedMeals[mealKey] = only;
+        }
+        state.messages.push({ role: 'assistant', content: reply });
+        recordMenuHistory(state.parsedMeals);
+
+        $('step2Card').classList.remove('hidden');
+        $('step3Card').classList.add('hidden');
+        $('resetBtn').classList.remove('hidden');
+        applyRoleUI();
+        renderMealStep();
+        syncUrl();
+        setStatus($('step1Status'), `${meal.label}菜单好啦，选 A 或 B ♥`, 'ok');
+      } catch (err) {
+        setStatus($('step1Status'), err.message, 'error');
+      } finally {
+        $('generateBtn').disabled = false;
+        $('generateSingleBtn').disabled = false;
+      }
+    }
+
+    function buildScheduleContext() {
+      const startTime = $('cookStartTime').value || '07:00';
+      const style = $('cookStyle').value === 'relaxed' ? '从容不赶时间，节点间隔放宽' : '高效并行，能同时做的尽量重叠';
+      const cookDate = $('cookDate').value || new Date().toISOString().slice(0, 10);
+      return [
+        `【做饭日期】${cookDate}`,
+        `【当天开始准备时间】${startTime}`,
+        `【安排风格】${style}`
+      ].join('\n');
+    }
+
+    async function confirmSelections() {
+      if (!allSelected()) {
+        setStatus($('step2Status'), isSingleMealMode() ? '请先选 A 或 B' : '请先选完四餐', 'error');
+        return;
+      }
+      if (!ensureApiForHusband()) return;
+
+      const single = isSingleMealMode() ? mealByKey(state.singleMealKey) : null;
+      const choiceMsg = single ? [
+        `我的选择如下，请按工作流程第二步，**仅为【${single.label}】这一餐**完整输出（含风味与文化背景、Trigger、采购、做饭时间表，不要写其他餐次）：`,
+        `- ${single.label}：${state.selections[single.key]}`,
+        '',
+        buildScheduleContext()
+      ].join('\n') : [
+        '我的选择如下，请按工作流程第二步完整输出（含第 4 部分做饭流程时间表）：',
+        MEALS.map(m => `- ${m.label}：${state.selections[m.key]}`).join('\n'),
+        '',
+        buildScheduleContext()
+      ].join('\n');
+
+      $('confirmBtn').disabled = true;
+      setStatus($('step2Status'), '正在生成方案 + 做饭时间表…');
+
+      try {
+        const messages = state.messages.concat([{ role: 'user', content: choiceMsg }]);
+        const reply = await callApi(messages);
+        state.finalResponse = reply;
+        state.scheduleResponse = '';
+        state.messages = messages.concat([{ role: 'assistant', content: reply }]);
+        $('finalResult').innerHTML = simpleMarkdown(reply);
+        $('step3Card').classList.remove('hidden');
+        setStatus($('step2Status'), '', '');
+        syncUrl();
+        $('step3Card').scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        setStatus($('step2Status'), err.message, 'error');
+      } finally {
+        $('confirmBtn').disabled = false;
+      }
+    }
+
+    function getSelectedMealsSummary() {
+      return MEALS.map(m => {
+        const sel = state.selections[m.key];
+        const data = state.parsedMeals[m.key];
+        const time = data?.time ? `（${data.time}）` : '';
+        let dish = '';
+        if (data && sel) {
+          const opt = sel === 'A' ? data.optionA : data.optionB;
+          dish = formatOptionText(opt).split('\n')[0].slice(0, 80);
+        }
+        return `${m.label}${time}：套餐 ${sel || '未选'}${dish ? ' — ' + dish : ''}`;
+      }).join('\n');
+    }
+
+    function exportTxt() {
+      if (!state.finalResponse) { setStatus($('step3Status'), '还没有内容', 'error'); return; }
+      const date = new Date().toLocaleDateString('zh-CN');
+      const parts = [
+        'Kitty厨房 · 一日四餐方案 💕',
+        '给锞锞的爱心菜单 · 生成日期：' + date, '',
+        '【现有食材】', state.ingredients, '',
+        '【每餐选择】', selectionsText(), '',
+        '========== 详细方案 + 做饭时间表 ==========', '', state.finalResponse
+      ];
+      const content = parts.join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
+      a.download = '四餐方案_' + date.replace(/\//g, '-') + '.txt';
+      a.click();
+      setStatus($('step3Status'), '已导出，买菜时打开看吧 ♥', 'ok');
+    }
+
+    function resetAll() {
+      if (!confirm('重新开始？')) return;
+      Object.assign(state, {
+        ingredients: '', firstResponse: '', parsedMeals: {},
+        selections: { breakfast: '', lunch: '', dinner: '', snack: '' },
+        finalResponse: '', scheduleResponse: '', sharedByWife: false, shareRole: 'husband',
+        generateMode: 'full', singleMealKey: null, messages: []
+      });
+      if ($('extraNotes')) $('extraNotes').value = '';
+      applyRoleUI();
+      $('step2Card').classList.add('hidden');
+      $('step3Card').classList.add('hidden');
+      $('brokenLinkCard').classList.add('hidden');
+      $('cookPrefBox').style.display = 'none';
+      $('resetBtn').classList.add('hidden');
+      history.replaceState(null, '', getBaseUrl());
+      ['step1Status', 'step2Status', 'step3Status'].forEach(id => setStatus($(id), ''));
+    }
+
+    function shareToWife() {
+      if (!state.firstResponse && !Object.keys(state.parsedMeals).length) return;
+      openShareModal();
+    }
+
+    function wifeDoneShare() {
+      if (!allSelected()) {
+        showToast(isSingleMealMode() ? '先选 A 或 B 哦～' : '先把四餐都选完哦～');
+        return;
+      }
+      state.sharedByWife = true;
+      state.shareRole = 'husband';
+      syncUrl();
+      openWifeSendModal();
+    }
+
+    async function importLink() {
+      let input = '';
+      try {
+        const clip = await navigator.clipboard.readText();
+        if (clip) input = clip.trim();
+      } catch { /* 无剪贴板权限 */ }
+
+      if (!input) {
+        input = prompt('粘贴锞锞发回的短消息或链接：\n例如：老公我选好啦♥ 早餐A 午餐B 晚餐A 宵夜B') || '';
+      }
+      if (!input) return;
+
+      const shortSel = parseWifeShortSelections(input);
+      if (shortSel && Object.keys(state.parsedMeals).length) {
+        state.selections = shortSel;
+        state.sharedByWife = true;
+        $('step2Card').classList.remove('hidden');
+        if (!isWifeMode()) $('resetBtn').classList.remove('hidden');
+        renderMealStep();
+        syncUrl();
+        setStatus($('step2Status'), '已从短消息同步锞锞的选择 💕', 'ok');
+        showToast('锞锞的选择已经同步过来啦');
+        return;
+      }
+
+      const data = parseSharedFromInput(input);
+      if (!applySharedState(data)) {
+        if (shortSel) {
+          setStatus($('step2Status'), '短消息已识别，请先生成菜单再导入', 'error');
+        } else {
+          setStatus($('step2Status'), '无法识别，请粘贴完整链接或短消息', 'error');
+        }
+        return;
+      }
+      $('step2Card').classList.remove('hidden');
+      if (!isWifeMode()) $('resetBtn').classList.remove('hidden');
+      renderMealStep();
+      syncUrl();
+      setStatus($('step2Status'), '已同步锞锞的选择 💕', 'ok');
+      showToast('锞锞的选择已经同步过来啦');
+    }
+
+    function initFromSharedLink() {
+      const hadShareParam = location.search.includes('d=') || location.hash.length > 1;
+      const data = parseSharedFromPage();
+      if (!applySharedState(data)) {
+        if (hadShareParam) {
+          $('settingsCard').classList.add('hidden');
+          $('pantryCard').classList.add('hidden');
+          $('brokenLinkTitle').textContent = '😅 菜单数据不完整';
+          $('brokenLinkDesc').innerHTML = '微信有时会弄丢链接里的数据。<br>请让老公重新点「发给锞锞选餐」复制<strong>新链接</strong>。';
+          $('brokenLinkCard').classList.remove('hidden');
+        }
+        return;
+      }
+      $('step2Card').classList.remove('hidden');
+      if (!isWifeMode()) $('resetBtn').classList.remove('hidden');
+      renderMealStep();
+      if (state.sharedByWife && isApiConfigured()) {
+        showToast('锞锞的选择已加载，API 已自动读取，可直接生成方案+时间表');
+      }
+    }
+
+    function init() {
+      loadSettings();
+      loadPantry();
+      loadWifePrefs();
+      loadPublicBaseUrl();
+      applySetupFromQuery();
+      ['apiBase', 'apiModel', 'apiKey'].forEach(id => {
+        $(id).addEventListener('input', () => saveSettings(true));
+      });
+      $('publicBaseUrl').addEventListener('input', savePublicBaseUrl);
+      $('userCity').addEventListener('change', savePantry);
+      $('cookDate').addEventListener('change', savePantry);
+      $('wifePrefs').addEventListener('input', saveWifePrefs);
+      $('settingsToggle').addEventListener('click', () => $('settingsPanel').classList.toggle('open'));
+      $('addPantryBtn').addEventListener('click', () => { addPantryRow(); savePantry(); });
+      $('downloadTemplateBtn').addEventListener('click', downloadExcelTemplate);
+      $('importExcelBtn').addEventListener('click', () => $('excelFileInput').click());
+      $('excelFileInput').addEventListener('change', e => importExcelFile(e.target.files[0]));
+      $('generateBtn').addEventListener('click', generateMenu);
+      $('generateSingleBtn').addEventListener('click', () => generateSingleMeal(pickedSingleMeal));
+      document.querySelectorAll('.meal-pick-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          pickedSingleMeal = btn.dataset.meal;
+          document.querySelectorAll('.meal-pick-btn').forEach(b => b.classList.toggle('active', b === btn));
+        });
+      });
+      $('confirmBtn').addEventListener('click', confirmSelections);
+      $('exportBtn').addEventListener('click', exportTxt);
+      const savedStart = localStorage.getItem('hm_cookStartTime');
+      if (savedStart) $('cookStartTime').value = savedStart;
+      $('cookStartTime').addEventListener('change', () => {
+        localStorage.setItem('hm_cookStartTime', $('cookStartTime').value);
+      });
+      const savedStyle = localStorage.getItem('hm_cookStyle');
+      if (savedStyle) $('cookStyle').value = savedStyle;
+      $('cookStyle').addEventListener('change', () => {
+        localStorage.setItem('hm_cookStyle', $('cookStyle').value);
+      });
+      $('resetBtn').addEventListener('click', resetAll);
+      $('shareBtn').addEventListener('click', shareToWife);
+      $('wifeDoneBtn').addEventListener('click', wifeDoneShare);
+      $('importLinkBtn').addEventListener('click', importLink);
+      $('prevMealBtn').addEventListener('click', goPrevMeal);
+      $('restartPickBtn').addEventListener('click', restartSelection);
+      $('backToSelectBtn').addEventListener('click', () => {
+        $('step3Card').classList.add('hidden');
+        renderMealStep();
+        $('step2Card').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      $('closeShareModal').addEventListener('click', () => $('shareModal').classList.add('hidden'));
+      $('shareModal').addEventListener('click', e => { if (e.target === $('shareModal')) $('shareModal').classList.add('hidden'); });
+
+      $('copyLinkOnlyBtn').addEventListener('click', async () => {
+        const ok = await copyText($('shareLinkInput').value);
+        showToast(ok ? '链接已复制，去微信发给锞锞吧 💕' : '复制失败');
+      });
+
+      $('shareLinkInput').addEventListener('click', function() { this.select(); });
+
+      $('closeWifeSendModal').addEventListener('click', () => $('wifeSendModal').classList.add('hidden'));
+      $('wifeSendModal').addEventListener('click', e => { if (e.target === $('wifeSendModal')) $('wifeSendModal').classList.add('hidden'); });
+
+      $('wifeCopyShortBtn').addEventListener('click', async () => {
+        const ok = await copyText(buildWifeShortMsg());
+        $('wifeSendModal').classList.add('hidden');
+        showToast(ok ? '短消息已复制，去微信发给老公吧 💕' : '复制失败，请手动复制');
+      });
+
+      $('wifeCopyLinkBtn').addEventListener('click', async () => {
+        const ok = await copyText($('wifeSendLinkInput').value);
+        showToast(ok ? '链接已复制，去微信发给老公吧 💕' : '复制失败');
+      });
+
+      $('wifeSendLinkInput').addEventListener('click', function() { this.select(); });
+
+      initFromSharedLink();
+      applyRoleUI();
+      if (isApiConfigured() && (location.search.includes('d=') || location.hash.length > 1)) {
+        loadSettings();
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
